@@ -7,73 +7,74 @@
 
 const form = (function () {
 
-    const addButton = document.getElementById('add-button');
-    addButton.addEventListener('click',()=>{
-        console.log("addbutton clicked");
-        
-        if (document.getElementsByTagName('form').length===0){//if form has not been created already
-            console.log("there are no forms");
-            let form = document.createElement('form');
-            document.body.appendChild(form);
-
-            function createFormElement(type, description){
-                let formDiv = document.createElement('div');
-                let element = document.createElement(type);
-                let elementLabel = document.createElement('label')
-
-                if (type !== 'button'){
-                    elementLabel.for = `${description}`
-                    elementLabel.textContent = `${description}`
-                    formDiv.appendChild(elementLabel);
+    const formCreation = (function (){
+        const addButton = document.getElementById('add-button');
+    
+    
+        addButton.addEventListener('click',()=>{
+            console.log("addbutton clicked");
+            
+            if (document.getElementById('form-container')===null){//if form has not been created already
+                console.log("there are no forms");
+                let formContainer = document.createElement('div');
+                formContainer.id = 'form-container';
+                document.body.appendChild(formContainer);
+    
+                function createFormElement(type, description){
+                    let formDiv = document.createElement('div');
+                    let element = document.createElement(type);
+                    let elementLabel = document.createElement('label')
+    
+                    if (type !== 'button'){
+                        elementLabel.for = `${description}`
+                        elementLabel.textContent = `${description}`
+                        formDiv.appendChild(elementLabel);
+                    }
+                    else{
+                        element.setAttribute('id','submit-button');
+                        element.innerText = description;
+                    }
+                    if (type === 'select'){
+                        element.innerHTML = `
+                        <option value="none">None</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        `
+                    }
+    
+                    formContainer.appendChild(formDiv);
+                    formDiv.appendChild(element);
+                    element.name = description;
                 }
-                else{
-                    element.innerText = description;
-                }
-                
-                form.appendChild(formDiv);
-                formDiv.appendChild(element);
-                element.name = description;
+    
+                createFormElement('input','Title');
+                createFormElement('input','Description');
+                createFormElement('input','Due-Date');
+                createFormElement('select','Priority');
+                createFormElement('button','submit', 'submit');
+    
+                document.getElementById('submit-button').addEventListener('click',()=>{
+                    ToDos.createToDo();
+                })
             }
+        })
 
-            createFormElement('input','Title');
-            createFormElement('input','Description');
-            createFormElement('input','Due-Date');
-            createFormElement('input','Priority');
-            createFormElement('button','submit', 'submit');
+    })();
 
-            document.getE
-        }
-    })
 
+    return {
+
+    }
+
+})();
 
 const ToDos = (function (){
     function createToDo(){
-
+        console.log("TODO created!")
     }
 
     return {
         createToDo,
     }
-})
-
-
-
-
-//     <form action="" method="get" class="form-example">
-//   <div class="form-example">
-//     <label for="name">Enter your name: </label>
-//     <input type="text" name="name" id="name" required>
-//   </div>
-//   <div class="form-example">
-//     <label for="email">Enter your email: </label>
-//     <input type="email" name="email" id="email" required>
-//   </div>
-//   <div class="form-example">
-//     <input type="submit" value="Subscribe!">
-//   </div>
-// </form>
-    return {
-
-    }
-
 })();
