@@ -35,12 +35,33 @@ const form = (function () {
                         element.innerText = description;
                     }
                     if (type === 'select'){
-                        element.innerHTML = `
-                        <option value="none">None</option>
-                        <option value="low">Low</option>
-                        <option value="medium">Medium</option>
-                        <option value="high">High</option>
-                        `
+                        function createSelectOption(optionText){
+                            let newOption = document.createElement('option');
+                            element.appendChild(newOption);
+                            newOption.value = optionText.toLowerCase();
+                            newOption.innerText = optionText;
+                        }
+
+                        createSelectOption('None');
+                        createSelectOption('Low');
+                        createSelectOption('Medium');
+                        createSelectOption('High');
+                        // let optionNone = document.createElement('option');
+                        // let optionLow = document.createElement('option');
+                        // let optionMedium = document.createElement('option');
+                        // let optionHigh = document.createElement('option');
+                        // element.appendChild(optionNone);
+                        // element.appendChild(optionLow);
+                        // element.appendChild(optionMedium);
+                        // element.appendChild(optionHigh);
+                        // optionNone.value = 'none';
+                        // optionLow.value = 'low';
+                        // optionMedium.value = 'medium';
+                        // optionHigh.value = 'high';
+                        // optionNone.value = 'none';
+                        // optionLow.value = 'low';
+                        // optionMedium.value = 'medium';
+                        // optionHigh.value = 'high';
                     }
     
                     formContainer.appendChild(formDiv);
