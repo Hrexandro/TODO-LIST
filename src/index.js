@@ -5,77 +5,61 @@
 // set up form hider and appearer
 // create dom manipulation module
 
+//make ToDos.createToDo(); work
+//how to grab them without being overly verbose
+// create the variables outside of the function after all?
+
 const form = (function () {
 
-    const formCreation = (function (){
+    const formCreation = (function () {
         const addButton = document.getElementById('add-button');
-    
-    
-        addButton.addEventListener('click',()=>{
+
+        let titleInput = document.createElement('input');
+        let descriptionInput = document.createElement('input');
+        let dueDateInput = document.createElement('input');
+        let prioritySelect = document.createElement('select');
+
+        addButton.addEventListener('click', () => {
             console.log("addbutton clicked");
-            
-            if (document.getElementById('form-container')===null){//if form has not been created already
+
+            if (document.getElementById('form-container') === null) {//if form has not been created already
                 console.log("there are no forms");
+
                 let formContainer = document.createElement('div');
                 formContainer.id = 'form-container';
                 document.body.appendChild(formContainer);
-    
-                function createFormElement(type, description){
-                    let formDiv = document.createElement('div');
-                    let element = document.createElement(type);
-                    let elementLabel = document.createElement('label')
-    
-                    if (type !== 'button'){
-                        elementLabel.for = `${description}`
-                        elementLabel.textContent = `${description}`
-                        formDiv.appendChild(elementLabel);
-                    }
-                    else{
-                        element.setAttribute('id','submit-button');
-                        element.innerText = description;
-                    }
-                    if (type === 'select'){
-                        function createSelectOption(optionText){
-                            let newOption = document.createElement('option');
-                            element.appendChild(newOption);
-                            newOption.value = optionText.toLowerCase();
-                            newOption.innerText = optionText;
-                        }
+                let submitButton = document.createElement('button');
+                submitButton.setAttribute('id', 'submit-button')
 
-                        createSelectOption('None');
-                        createSelectOption('Low');
-                        createSelectOption('Medium');
-                        createSelectOption('High');
-                        // let optionNone = document.createElement('option');
-                        // let optionLow = document.createElement('option');
-                        // let optionMedium = document.createElement('option');
-                        // let optionHigh = document.createElement('option');
-                        // element.appendChild(optionNone);
-                        // element.appendChild(optionLow);
-                        // element.appendChild(optionMedium);
-                        // element.appendChild(optionHigh);
-                        // optionNone.value = 'none';
-                        // optionLow.value = 'low';
-                        // optionMedium.value = 'medium';
-                        // optionHigh.value = 'high';
-                        // optionNone.value = 'none';
-                        // optionLow.value = 'low';
-                        // optionMedium.value = 'medium';
-                        // optionHigh.value = 'high';
-                    }
-    
-                    formContainer.appendChild(formDiv);
-                    formDiv.appendChild(element);
-                    element.name = description;
+                function appendFormElement(element, description) {
+                    let formElementContainer = document.createElement('div');
+                    formElementContainer.id = 'form-container';
+                    document.body.appendChild(formElementContainer);
+                    let elementLabel = document.createElement('label')
+                    elementLabel.for = `${description}`
+                    elementLabel.textContent = `${description}`
+                    formElementContainer.appendChild(elementLabel);
+                    formElementContainer.appendChild(element);
                 }
-    
-                createFormElement('input','Title');
-                createFormElement('input','Description');
-                createFormElement('input','Due-Date');
-                createFormElement('select','Priority');
-                createFormElement('button','submit', 'submit');
-    
-                document.getElementById('submit-button').addEventListener('click',()=>{
+                appendFormElement(titleInput, "Title");
+                appendFormElement(descriptionInput, "Description");
+                appendFormElement(dueDateInput, "Due-date");
+                appendFormElement(prioritySelect, "Priority");
+
+                function createSelectOption(text){
+                    let option = document.createElement('option');
+                    prioritySelect.appendChild(option);
+                    option.value = text.toLowerCase();
+                    option.innerText = text;
+                }
+                createSelectOption("None");
+                createSelectOption("Low");
+                createSelectOption("Medium");
+                createSelectOption("High");
+
+                document.body.appendChild(submitButton);
+                submitButton.innerText = "Submit"
+                document.getElementById('submit-button').addEventListener('click', () => {
                     ToDos.createToDo();
                 })
             }
@@ -90,10 +74,22 @@ const form = (function () {
 
 })();
 
-const ToDos = (function (){
-    function createToDo(){
-        console.log("TODO created!")
-    }
+const ToDos = (function () {
+    console.log("create todo runs")
+    // let toDoArray = [];
+    // class toDo {
+    //     constructor(title, description, dueDate, priority) {
+    //         this.title = title;
+    //         this.description = description;
+    //         this.dueDate = dueDate;
+    //         this.priority = priority;
+    //     }
+    // }
+    // function createToDo(title, description, dueDate, priority) {
+    //     console.log("TODO creation start")
+    //     let newToDo = new toDo(title, description, dueDate, priority)
+    //     toDoArray.push(newToDo)
+    // }
 
     return {
         createToDo,
