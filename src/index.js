@@ -44,8 +44,10 @@ const form = (function () {
                     appendFormElement(dueDateInput, 'Due-date', document.querySelector('label[for=Priority]'));
                 }
                 else {
-                    dueDateInput.remove();
-                    document.querySelector('label[for=Due-date]').remove();
+                    if (document.getElementById("Due-date")){
+                        dueDateInput.remove();
+                        document.querySelector('label[for=Due-date]').remove();
+                    }
                 }
             }
 
@@ -76,12 +78,10 @@ const form = (function () {
             document.body.appendChild(submitButton);
             submitButton.innerText = 'Submit'
             document.getElementById('submit-button').addEventListener('click', () => {
-                ToDos.createToDo(titleInput.value, descriptionInput.value, dueDateInput.value, prioritySelect.value);
+                ToDos.createToDo(titleInput.value, descriptionInput.value, prioritySelect.value, dueDateInput.value);
 
                 for (i = 0; i < document.getElementsByTagName("input").length; i++) {//clear the form values
                     document.getElementsByTagName("input")[i].value = "";
-                    console.log(i)
-                    console.log(document.getElementsByTagName("input")[i]);
                     prioritySelect.value = "None"
                 }
 
@@ -103,6 +103,9 @@ const DisplayingToDos = (function () {
 
     function display() {
         console.log("display todo starts")
+        for (i=0;i<ToDos.toDoArray.length;i++){
+            console.log(ToDos.toDoArray)
+        }
     }
 
     return {
@@ -114,11 +117,13 @@ const ToDos = (function () {
     console.log('create todo runs')
     let toDoArray = [];
     class toDo {
-        constructor(title, description, dueDate, priority) {
+        constructor(title, description, priority, dueDate) {
             this.title = title;
             this.description = description;
-            this.dueDate = dueDate;
             this.priority = priority;
+            if (dueDate){
+                this.dueDate = dueDate;
+            }
         }
     }
     function createToDo(title, description, dueDate, priority) {
