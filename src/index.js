@@ -1,5 +1,15 @@
+/*Displaying created todos
+divide them into projects
+add possible checklist input
+checklist should be checkable in the final todo interface
+add restrictions to form input to ensure aesthetic compatibility
+style everything to look nice and neat and clean and super cool
+*/
+
+import './style.css';
 const form = (function () {
     const addButton = document.getElementById('add-button');
+    const formContainer = document.getElementById('form-container')
 
     let titleInput = document.createElement('input');
     let descriptionInput = document.createElement('input');
@@ -11,12 +21,12 @@ const form = (function () {
     addButton.addEventListener('click', () => {
         console.log('addbutton clicked');
 
-        if (document.getElementById('form-container') === null) {//if form has not been created already
+        if (document.getElementById('input-container') === null) {//if form has not been created already
             console.log('there are no forms');
 
-            let formContainer = document.createElement('div');
-            formContainer.id = 'form-container';
-            document.body.appendChild(formContainer);
+            let inputContainer = document.createElement('div');
+            inputContainer.id = 'input-container';
+            formContainer.appendChild(inputContainer);
             let submitButton = document.createElement('button');
             submitButton.setAttribute('id', 'submit-button')
 
@@ -26,12 +36,12 @@ const form = (function () {
                 elementLabel.innerText = `${description}`;
                 element.id = `${description}`;
                 if (insertBeforeWhat) {
-                    formContainer.insertBefore(elementLabel, insertBeforeWhat);
-                    formContainer.insertBefore(element, insertBeforeWhat);
+                    inputContainer.insertBefore(elementLabel, insertBeforeWhat);
+                    inputContainer.insertBefore(element, insertBeforeWhat);
                 }
                 else {
-                    formContainer.appendChild(elementLabel);
-                    formContainer.appendChild(element);
+                    inputContainer.appendChild(elementLabel);
+                    inputContainer.appendChild(element);
                 }
             }
             appendFormElement(titleInput, 'Title');
@@ -75,7 +85,7 @@ const form = (function () {
             createSelectOption('Medium');
             createSelectOption('High');
 
-            document.body.appendChild(submitButton);
+            formContainer.appendChild(submitButton);
             submitButton.innerText = 'Submit'
             document.getElementById('submit-button').addEventListener('click', () => {
                 ToDos.createToDo(titleInput.value, descriptionInput.value, prioritySelect.value, dueDateInput.value);

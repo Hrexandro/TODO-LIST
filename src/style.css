@@ -1,0 +1,26 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#form-container {
+    padding-left: 10px;
+    padding-right: 5px;
+    height: 100%;
+    background: #2c9fd1;
+    color: white;
+    font-size: 0.9em;
+}
+
+#input-container {
+    top: 0px;
+    position: sticky;
+}
+
+body {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 7fr;
+    column-gap: 0px;
+    height: 100vh;
+}
