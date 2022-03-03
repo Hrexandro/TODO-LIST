@@ -8,6 +8,22 @@ make them draggable to switch places?
 */
 
 import './style.css';
+
+const DOMManipulation = (function(){
+    function putElementOnPage(element, description, insertBeforeWhat, innerText, parent){
+//element - already created element with document.createElement
+// label/description - if exists: do this (substitute description with label or other way around)
+//elementLabel.setAttribute('for', description);
+//elementLabel.innerText = `${description}`;
+//insertBeforeWhat - if exists, use it to specify before what it should be inserted
+//innerText
+//parent
+    }
+
+    return {
+        putElementOnPage
+    }
+})();
 const form = (function () {
     const addButton = document.getElementById('add-button');
     const formContainer = document.getElementById('form-container')
@@ -35,7 +51,7 @@ const form = (function () {
                 let elementLabel = document.createElement('label');
                 elementLabel.setAttribute('for', description);
                 elementLabel.innerText = `${description}`;
-                element.id = `${description}`;
+                element.setAttribute('id', description)
                 if (insertBeforeWhat) {
                     inputContainer.insertBefore(elementLabel, insertBeforeWhat);
                     inputContainer.insertBefore(element, insertBeforeWhat);
@@ -126,7 +142,7 @@ const DisplayingToDos = (function () {
     function display(arrayOfTodos) {
         console.log('display todo starts');
 
-        function displayLine(label, value, parent){
+        function displayLine(label, value, parent){//to be substituted by a function in DOMManipulation
 
             let element = document.createElement('p');
             element.innerText = `${label}: ${value}`;
@@ -137,7 +153,9 @@ const DisplayingToDos = (function () {
             let toDoContainer = document.createElement('div');
             contentDisplay.appendChild(toDoContainer);
             displayLine('Title', arrayOfTodos[j].title, toDoContainer);
-            displayLine('Description', arrayOfTodos[j].description, toDoContainer);
+            if(arrayOfTodos[j].description){
+                displayLine('Description', arrayOfTodos[j].description, toDoContainer);
+            }
             if (arrayOfTodos[j].dueDate){
                 displayLine('Due date', arrayOfTodos[j].dueDate, toDoContainer);
             }
