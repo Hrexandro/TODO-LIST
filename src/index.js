@@ -9,15 +9,59 @@ make them draggable to switch places?
 
 import './style.css';
 
-const DOMManipulation = (function(){
-    function putElementOnPage(element, description, insertBeforeWhat, innerText, parent){
-//element - already created element with document.createElement
-// label/description - if exists: do this (substitute description with label or other way around)
-//elementLabel.setAttribute('for', description);
-//elementLabel.innerText = `${description}`;
-//insertBeforeWhat - if exists, use it to specify before what it should be inserted
-//innerText
-//parent
+const DOMManipulation = (function () {
+    function putElementOnPage(element, description, insertBeforeWhat, innerText, parent) {//description is for labelled form elements
+        //element - already created element with document.createElement
+        // label/description - if exists: do this (substitute description with label or other way around)
+        //elementLabel.setAttribute('for', description);
+        //elementLabel.innerText = `${description}`;
+        //insertBeforeWhat - if exists, use it to specify before what it should be inserted
+        //innerText
+        //parent
+        if (typeof element === 'string'){//if element is not object, meaning an already created element
+            element = document.createElement(element);
+        }
+        if (innerText){
+            element.innerText = innerText;
+        }
+
+        if (description) {
+            let elementLabel = document.createElement('label');
+            elementLabel.setAttribute('for', description);
+            elementLabel.innerText = `${description}`;
+            element.setAttribute('id', description)
+            if (insertBeforeWhat) {
+                parent.insertBefore(elementLabel, insertBeforeWhat);
+                //parent.insertBefore(element, insertBeforeWhat);
+            }
+            else {
+                parent.appendChild(elementLabel);
+                //parent.appendChild(element);
+            }   
+        }
+        if (insertBeforeWhat) {
+            //parent.insertBefore(elementLabel, insertBeforeWhat);
+            parent.insertBefore(element, insertBeforeWhat);
+        }
+        else {
+            //parent.appendChild(elementLabel);
+            parent.appendChild(element);
+        }
+
+        // function appendFormElement(element, description, insertBeforeWhat) {
+        //     let elementLabel = document.createElement('label');
+        //     elementLabel.setAttribute('for', description);
+        //     elementLabel.innerText = `${description}`;
+        //     element.setAttribute('id', description)
+        //     if (insertBeforeWhat) {
+        //         inputContainer.insertBefore(elementLabel, insertBeforeWhat);
+        //         inputContainer.insertBefore(element, insertBeforeWhat);
+        //     }
+        //     else {
+        //         inputContainer.appendChild(elementLabel);
+        //         inputContainer.appendChild(element);
+        //     }
+        // }
     }
 
     return {
@@ -47,28 +91,32 @@ const form = (function () {
             let submitButton = document.createElement('button');
             submitButton.setAttribute('id', 'submit-button')
 
-            function appendFormElement(element, description, insertBeforeWhat) {
-                let elementLabel = document.createElement('label');
-                elementLabel.setAttribute('for', description);
-                elementLabel.innerText = `${description}`;
-                element.setAttribute('id', description)
-                if (insertBeforeWhat) {
-                    inputContainer.insertBefore(elementLabel, insertBeforeWhat);
-                    inputContainer.insertBefore(element, insertBeforeWhat);
-                }
-                else {
-                    inputContainer.appendChild(elementLabel);
-                    inputContainer.appendChild(element);
-                }
-            }
-            appendFormElement(titleInput, 'Title');
-            appendFormElement(descriptionInput, 'Description');
-            appendFormElement(deadLineInput, 'Deadline');
+            // function appendFormElement(element, description, insertBeforeWhat) {
+            //     let elementLabel = document.createElement('label');
+            //     elementLabel.setAttribute('for', description);
+            //     elementLabel.innerText = `${description}`;
+            //     element.setAttribute('id', description)
+            //     if (insertBeforeWhat) {
+            //         inputContainer.insertBefore(elementLabel, insertBeforeWhat);
+            //         inputContainer.insertBefore(element, insertBeforeWhat);
+            //     }
+            //     else {
+            //         inputContainer.appendChild(elementLabel);
+            //         inputContainer.appendChild(element);
+            //     }
+            // }
+            DOMManipulation.putElementOnPage(titleInput, 'Title', undefined, undefined, inputContainer);
+            //appendFormElement(titleInput, 'Title');
+            DOMManipulation.putElementOnPage(descriptionInput, 'Description', undefined, undefined, inputContainer);
+            //appendFormElement(descriptionInput, 'Description');
+            DOMManipulation.putElementOnPage(deadLineInput, 'Deadline', undefined, undefined, inputContainer);
+            //appendFormElement(deadLineInput, 'Deadline');
             deadLineInput.type = 'checkbox';
 
             function checkCheckboxStatus(checkBoxElement) {
                 if (checkBoxElement.checked) {
-                    appendFormElement(dueDateInput, 'Due-date', document.querySelector('label[for=Priority]'));
+                    DOMManipulation.putElementOnPage(dueDateInput, 'Due-date', document.querySelector('label[for=Priority]'), undefined, inputContainer);
+                    //appendFormElement(dueDateInput, 'Due-date', document.querySelector('label[for=Priority]'));
                 }
                 else {
                     if (document.getElementById("Due-date")) {
@@ -88,7 +136,8 @@ const form = (function () {
                 //     document.querySelector('label[for=Due-date]').remove();
                 // }
             })
-            appendFormElement(prioritySelect, 'Priority');
+            DOMManipulation.putElementOnPage(prioritySelect, 'Priority', undefined, undefined, inputContainer);
+            //appendFormElement(prioritySelect, 'Priority');
 
 
             function createSelectOption(text) {
@@ -106,12 +155,10 @@ const form = (function () {
             submitButton.innerText = 'Submit'
             document.getElementById('submit-button').addEventListener('click', () => {
                 ToDos.createToDo(titleInput.value, descriptionInput.value, prioritySelect.value, dueDateInput.value);
-
                 for (let i = 0; i < document.getElementsByTagName("input").length; i++) {//clear the form values
                     document.getElementsByTagName("input")[i].value = "";
                     prioritySelect.value = "None"
                 }
-
                 deadLineInput.checked = false;//uncheck the deadline checkbox
                 checkCheckboxStatus(deadLineInput)//hide the date
                 DisplayingToDos.removeAllDisplayedContent();
@@ -131,9 +178,9 @@ const DisplayingToDos = (function () {
 
     let contentDisplay = document.getElementById('content-display');
 
-    function removeAllDisplayedContent(){
+    function removeAllDisplayedContent() {
         let child = contentDisplay.lastElementChild;
-        while(child){
+        while (child) {
             contentDisplay.removeChild(child);
             child = contentDisplay.lastElementChild;
         }
@@ -142,25 +189,29 @@ const DisplayingToDos = (function () {
     function display(arrayOfTodos) {
         console.log('display todo starts');
 
-        function displayLine(label, value, parent){//to be substituted by a function in DOMManipulation
+        // function displayLine(label, value, parent) {//to be substituted by a function in DOMManipulation
 
-            let element = document.createElement('p');
-            element.innerText = `${label}: ${value}`;
-            parent.appendChild(element);
+        //     let element = document.createElement('p');
+        //     element.innerText = `${label}: ${value}`;
+        //     parent.appendChild(element);
 
-        }
+        // }
         for (let j = 0; j < arrayOfTodos.length; j++) {
             let toDoContainer = document.createElement('div');
             contentDisplay.appendChild(toDoContainer);
-            displayLine('Title', arrayOfTodos[j].title, toDoContainer);
-            if(arrayOfTodos[j].description){
-                displayLine('Description', arrayOfTodos[j].description, toDoContainer);
+            DOMManipulation.putElementOnPage('p', undefined, undefined,`Title: ${arrayOfTodos[j].title}`, toDoContainer);
+            //displayLine('Title', arrayOfTodos[j].title, toDoContainer);
+            if (arrayOfTodos[j].description) {
+                DOMManipulation.putElementOnPage('p', undefined, undefined,`Description: ${arrayOfTodos[j].description}`, toDoContainer);
+                //displayLine('Description', arrayOfTodos[j].description, toDoContainer);
             }
-            if (arrayOfTodos[j].dueDate){
-                displayLine('Due date', arrayOfTodos[j].dueDate, toDoContainer);
+            if (arrayOfTodos[j].dueDate) {
+                DOMManipulation.putElementOnPage('p', undefined, undefined,`Due date: ${arrayOfTodos[j].dueDate}`, toDoContainer);
+                //displayLine('Due date', arrayOfTodos[j].dueDate, toDoContainer);
             }
-            if (arrayOfTodos[j].priority!=='None'){
-                displayLine("Priority", arrayOfTodos[j].priority, toDoContainer);
+            if (arrayOfTodos[j].priority !== 'None') {
+                DOMManipulation.putElementOnPage('p', undefined, undefined,`Priority: ${arrayOfTodos[j].priority}`, toDoContainer);
+                //displayLine("Priority", arrayOfTodos[j].priority, toDoContainer);
             }
             console.log(arrayOfTodos[j])
         }
