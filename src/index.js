@@ -3,6 +3,8 @@ divide them into projects
 filter finished and unfinished
 add possible checklist input
 checklist should be checkable in the final todo interface
+adding new positions and removing positions from checklist
+add logic to take the values from the checklist
 add notes in the displayed checklist that you can add and edit
 add restrictions to form input to ensure aesthetic compatibility
 style everything to look nice and neat and clean and super cool
@@ -12,16 +14,16 @@ make them draggable to switch places?
 import './style.css';
 
 const DOMManipulation = (function () {
-    function putElementOnPage(element, description, insertBeforeWhat, innerText, parent) {//description is for labelled form elements
-
-        if (typeof element === 'string'){//if element is not object, meaning an already created element
+    function putElementOnPage(element, description, insertBeforeWhat, innerText, parent) {
+        console.log("element putted on page is", element)
+        if (typeof element === 'string') {//if element is not object, meaning an already created element
             element = document.createElement(element);
         }
-        if (innerText){
+        if (innerText) {
             element.innerText = innerText;
         }
 
-        if (description) {
+        if (description) {//description is for labelled form elements
             let elementLabel = document.createElement('label');
             elementLabel.setAttribute('for', description);
             elementLabel.innerText = `${description}`;
@@ -31,7 +33,7 @@ const DOMManipulation = (function () {
             }
             else {
                 parent.appendChild(elementLabel);
-            }   
+            }
         }
         if (insertBeforeWhat) {
             parent.insertBefore(element, insertBeforeWhat);
@@ -41,8 +43,18 @@ const DOMManipulation = (function () {
         }
     }
 
+    function removeElements(...elements) {//elements have to be DOMs, not variables
+        let counter = elements.length;
+        for (let k = 0; k < counter; k++) {
+            if (elements[k]) {
+                elements[k].remove();
+            }
+        }
+    }
+
     return {
-        putElementOnPage
+        putElementOnPage,
+        removeElements
     }
 })();
 const form = (function () {
@@ -56,6 +68,16 @@ const form = (function () {
     dueDateInput.type = 'date';
     let prioritySelect = document.createElement('select');
 
+
+
+    function checkCheckboxStatus(checkBoxElement, ifChecked, ifUnchecked) {//make sure the parameters are functions
+        if (checkBoxElement.checked) {
+            ifChecked();
+        }
+        else {
+            ifUnchecked();
+        }
+    }
     addButton.addEventListener('click', () => {
         console.log('addbutton clicked');
 
@@ -70,24 +92,51 @@ const form = (function () {
 
             DOMManipulation.putElementOnPage(titleInput, 'Title', undefined, undefined, inputContainer);
             DOMManipulation.putElementOnPage(descriptionInput, 'Description', undefined, undefined, inputContainer);
+
             DOMManipulation.putElementOnPage(deadLineInput, 'Deadline', undefined, undefined, inputContainer);
             deadLineInput.type = 'checkbox';
 
-            function checkCheckboxStatus(checkBoxElement) {
-                if (checkBoxElement.checked) {
-                    DOMManipulation.putElementOnPage(dueDateInput, 'Due-date', document.querySelector('label[for=Priority]'), undefined, inputContainer);
-                }
-                else {
-                    if (document.getElementById("Due-date")) {
-                        dueDateInput.remove();
-                        document.querySelector('label[for=Due-date]').remove();
-                    }
-                }
+            function addDueDateInputOnPage() {
+                console.log("add due date on page runs")
+                console.log("due date input is", dueDateInput)
+                DOMManipulation.putElementOnPage(dueDateInput, 'Due-date', document.querySelector('label[for=Checklist]'), undefined, inputContainer);
             }
 
             deadLineInput.addEventListener('click', () => {
-                checkCheckboxStatus(deadLineInput);
+                checkCheckboxStatus(deadLineInput, addDueDateInputOnPage, () => {
+                    DOMManipulation.removeElements(document.getElementById("Due-date"), document.querySelector('label[for=Due-date]'));
+                });
             })
+
+            //
+            let checkListInput = document.createElement('input');
+            checkListInput.type = 'checkbox';
+            DOMManipulation.putElementOnPage(checkListInput, 'Checklist', undefined, undefined, inputContainer);
+            //
+            //checklist stuff
+            checkListInput.addEventListener('click', () => {//check status, add an input page or remove
+                let checkListElement = document.createElement("input");
+                checkListElement.setAttribute('class', 'checklist-element')
+                checkCheckboxStatus(checkListInput, () => {
+                    DOMManipulation.putElementOnPage(
+
+                        checkListElement,
+                        undefined,
+                        document.querySelector('label[for=Priority]'),
+                        undefined, inputContainer)
+
+                },
+                    () => {
+                        Array.from(document.getElementsByClassName('checklist-element')).forEach(DOMManipulation.removeElements);//remove all checklist elements
+                    }
+
+                );
+
+            })
+            //checklist
+
+
+
             DOMManipulation.putElementOnPage(prioritySelect, 'Priority', undefined, undefined, inputContainer);
             function createSelectOption(text) {
                 let option = document.createElement('option');
@@ -100,6 +149,8 @@ const form = (function () {
             createSelectOption('Medium');
             createSelectOption('High');
 
+
+
             formContainer.appendChild(submitButton);
             submitButton.innerText = 'Submit'
             document.getElementById('submit-button').addEventListener('click', () => {
@@ -109,8 +160,10 @@ const form = (function () {
                     prioritySelect.value = "None"
                 }
                 deadLineInput.checked = false;//uncheck the deadline checkbox
-                checkCheckboxStatus(deadLineInput)//hide the date
-                DisplayingToDos.removeAllDisplayedContent();
+                checkCheckboxStatus(deadLineInput, addDueDateInputOnPage, () => {
+                    DOMManipulation.removeElements(document.getElementById("Due-date"), document.querySelector('label[for=Due-date]'));
+                });
+                DisplayingToDos.removeAllDisplayedContent();//remove and display again
                 DisplayingToDos.display(ToDos.toDoArray);
             })
         }
@@ -118,7 +171,7 @@ const form = (function () {
 
 
     return {
-        // checkCheckboxStatus,
+        
     }
 
 })();
@@ -140,15 +193,15 @@ const DisplayingToDos = (function () {
         for (let j = 0; j < arrayOfTodos.length; j++) {
             let toDoContainer = document.createElement('div');
             contentDisplay.appendChild(toDoContainer);
-            DOMManipulation.putElementOnPage('p', undefined, undefined,`Title: ${arrayOfTodos[j].title}`, toDoContainer);
+            DOMManipulation.putElementOnPage('p', undefined, undefined, `Title: ${arrayOfTodos[j].title}`, toDoContainer);
             if (arrayOfTodos[j].description) {
-                DOMManipulation.putElementOnPage('p', undefined, undefined,`Description: ${arrayOfTodos[j].description}`, toDoContainer);
+                DOMManipulation.putElementOnPage('p', undefined, undefined, `Description: ${arrayOfTodos[j].description}`, toDoContainer);
             }
             if (arrayOfTodos[j].dueDate) {
-                DOMManipulation.putElementOnPage('p', undefined, undefined,`Due date: ${arrayOfTodos[j].dueDate}`, toDoContainer);
+                DOMManipulation.putElementOnPage('p', undefined, undefined, `Due date: ${arrayOfTodos[j].dueDate}`, toDoContainer);
             }
             if (arrayOfTodos[j].priority !== 'None') {
-                DOMManipulation.putElementOnPage('p', undefined, undefined,`Priority: ${arrayOfTodos[j].priority}`, toDoContainer);
+                DOMManipulation.putElementOnPage('p', undefined, undefined, `Priority: ${arrayOfTodos[j].priority}`, toDoContainer);
             }
             console.log(arrayOfTodos[j])
         }
