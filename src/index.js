@@ -2,8 +2,15 @@
 divide them into projects
 filter finished and unfinished
 add possible checklist input
+
 checklist should be checkable in the final todo interface
 adding new positions and removing positions from checklist
+
+//////DO THIS NOW:
+=>FINISH removeSpecificElementButton.addEventListener
+
+
+
 add logic to take the values from the checklist
 add notes in the displayed checklist that you can add and edit
 add restrictions to form input to ensure aesthetic compatibility
@@ -68,7 +75,7 @@ const form = (function () {
     dueDateInput.type = 'date';
     let prioritySelect = document.createElement('select');
 
-
+    let checkListElementCounter = 0;
 
     function checkCheckboxStatus(checkBoxElement, ifChecked, ifUnchecked) {//make sure the parameters are functions
         if (checkBoxElement.checked) {
@@ -115,19 +122,55 @@ const form = (function () {
             //
             //checklist stuff
             checkListInput.addEventListener('click', () => {//check status, add an input page or remove
-                let checkListElement = document.createElement("input");
-                checkListElement.setAttribute('class', 'checklist-element')
-                checkCheckboxStatus(checkListInput, () => {
-                    DOMManipulation.putElementOnPage(
 
-                        checkListElement,
-                        undefined,
-                        document.querySelector('label[for=Priority]'),
-                        undefined, inputContainer)
+
+                checkCheckboxStatus(checkListInput, () => {
+                    function createNextItem() {
+                        let checkListElementContainer = document.createElement('div');
+                        let elementNumber = checkListElementCounter;//perhaps shift numbering to the checklistElement itself
+                        checkListElementContainer.setAttribute('id', elementNumber);
+                        checkListElementContainer.setAttribute('class', 'checklist-element-container');
+                        checkListElementCounter++;
+    
+                        DOMManipulation.putElementOnPage(
+    
+                            checkListElementContainer,
+                            undefined,
+                            document.querySelector('label[for=Priority]'),
+                            undefined,
+                            inputContainer);
+    
+                        let checkListElement = document.createElement('input');
+                        checkListElement.setAttribute('class', 'checklist-element')
+    
+                        DOMManipulation.putElementOnPage(checkListElement, undefined, undefined, undefined, checkListElementContainer);
+    
+                        let addNextElementButton = document.createElement('button');
+                        DOMManipulation.putElementOnPage(addNextElementButton, undefined, undefined, "+", checkListElementContainer);
+                        addNextElementButton.setAttribute('class','add-next-element-button')
+    
+                        addNextElementButton.addEventListener('click', () => {
+                            DOMManipulation.removeElements(document.getElementsByClassName('add-next-element-button')[0])
+                            
+                            createNextItem()
+                        })
+
+                        let removeSpecificElementButton = document.createElement('button');
+                        DOMManipulation.putElementOnPage(removeSpecificElementButton, undefined, undefined, "remove", checkListElementContainer);
+                        removeSpecificElementButton.setAttribute('class','remove-specific-element-button')
+
+                        removeSpecificElementButton.addEventListener('click',()=>{
+                            //have it remove the specific elemennt hehe :D
+                        })
+                    }
+                    createNextItem();
+
+
 
                 },
                     () => {
-                        Array.from(document.getElementsByClassName('checklist-element')).forEach(DOMManipulation.removeElements);//remove all checklist elements
+                        Array.from(document.getElementsByClassName('checklist-element-container')).forEach(DOMManipulation.removeElements);//remove all checklist elements
+                        //the above throws an error (Uncaught TypeError: elements[k].remove is not a function) but works, I wonder why
                     }
 
                 );
@@ -171,7 +214,7 @@ const form = (function () {
 
 
     return {
-        
+
     }
 
 })();
