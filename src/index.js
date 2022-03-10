@@ -7,7 +7,7 @@ checklist should be checkable in the final todo interface
 adding new positions and removing positions from checklist
 
 //////DO THIS NOW:
-=>FINISH removeSpecificElementButton.addEventListener
+display checklist with clickable check buttons
 
 
 
@@ -131,38 +131,36 @@ const form = (function () {
                         checkListElementContainer.setAttribute('id', elementNumber);
                         checkListElementContainer.setAttribute('class', 'checklist-element-container');
                         checkListElementCounter++;
-    
+
                         DOMManipulation.putElementOnPage(
-    
+
                             checkListElementContainer,
                             undefined,
                             document.querySelector('label[for=Priority]'),
                             undefined,
                             inputContainer);
-    
+
                         let checkListElement = document.createElement('input');
                         checkListElement.setAttribute('class', 'checklist-element')
-    
+
                         DOMManipulation.putElementOnPage(checkListElement, undefined, undefined, undefined, checkListElementContainer);
-    
+
                         let addNextElementButton = document.createElement('button');
                         DOMManipulation.putElementOnPage(addNextElementButton, undefined, undefined, "+", checkListElementContainer);
-                        addNextElementButton.setAttribute('class','add-next-element-button')
-    
+                        addNextElementButton.setAttribute('class', 'add-next-element-button')
+
                         addNextElementButton.addEventListener('click', () => {
                             DOMManipulation.removeElements(document.getElementsByClassName('add-next-element-button')[0])
-                            
+
                             createNextItem()
                         })
 
                         let removeSpecificElementButton = document.createElement('button');
                         DOMManipulation.putElementOnPage(removeSpecificElementButton, undefined, undefined, "remove", checkListElementContainer);
-                        removeSpecificElementButton.setAttribute('class','remove-specific-element-button')
+                        removeSpecificElementButton.setAttribute('class', 'remove-specific-element-button')
 
-                        removeSpecificElementButton.addEventListener('click',()=>{
-                            console.log(removeSpecificElementButton.parentElement)
+                        removeSpecificElementButton.addEventListener('click', () => {
                             DOMManipulation.removeElements(removeSpecificElementButton.parentElement)
-                            //have it remove the specific elemennt hehe :D
                         })
                     }
                     createNextItem();
@@ -199,10 +197,15 @@ const form = (function () {
             formContainer.appendChild(submitButton);
             submitButton.innerText = 'Submit'
             document.getElementById('submit-button').addEventListener('click', () => {
-                ToDos.createToDo(titleInput.value, descriptionInput.value, prioritySelect.value, dueDateInput.value);
+                let checkListValuesArray = Array.from(document.getElementsByClassName('checklist-element')).map((el) => { return el.value })
+                console.log("checklistvalues")
+                console.log(checkListValuesArray);
+                ToDos.createToDo(titleInput.value, descriptionInput.value, prioritySelect.value, dueDateInput.value, checkListValuesArray);
+
+
                 for (let i = 0; i < document.getElementsByTagName("input").length; i++) {//clear the form values
                     document.getElementsByTagName("input")[i].value = "";
-                    prioritySelect.value = "None"
+                    prioritySelect.value = "None";
                 }
                 deadLineInput.checked = false;//uncheck the deadline checkbox
                 checkCheckboxStatus(deadLineInput, addDueDateInputOnPage, () => {
@@ -248,7 +251,12 @@ const DisplayingToDos = (function () {
             if (arrayOfTodos[j].priority !== 'None') {
                 DOMManipulation.putElementOnPage('p', undefined, undefined, `Priority: ${arrayOfTodos[j].priority}`, toDoContainer);
             }
+            if (arrayOfTodos[j].checkList !== []){
+                //set to have it displayed
+                //have the checklist including points to check and uncheck them
+            }
             console.log(arrayOfTodos[j])
+            console.log(arrayOfTodos[j].checkList)
         }
     }
 
@@ -262,18 +270,21 @@ const ToDos = (function () {
     console.log('create todo runs')
     let toDoArray = [];
     class toDo {
-        constructor(title, description, priority, dueDate) {
+        constructor(title, description, priority, dueDate, checkList) {
             this.title = title;
             this.description = description;
             this.priority = priority;
             if (dueDate) {
                 this.dueDate = dueDate;
             }
+            if (checkList) {
+                this.checkList = checkList;
+            }
         }
     }
-    function createToDo(title, description, dueDate, priority) {
+    function createToDo(title, description, dueDate, priority, checkList) {
         console.log('TODO creation start')
-        let newToDo = new toDo(title, description, dueDate, priority)
+        let newToDo = new toDo(title, description, dueDate, priority, checkList)
         toDoArray.push(newToDo)
         console.log(toDoArray)
     }
@@ -283,3 +294,6 @@ const ToDos = (function () {
         toDoArray,
     }
 })();
+
+ToDos.createToDo('Finish the ToDo list app', 'Do all the things specified',undefined, 'High', ['make checklist clickable', 'improve style', 'add separate projects'])
+DisplayingToDos.display(ToDos.toDoArray)
