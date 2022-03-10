@@ -160,6 +160,8 @@ const form = (function () {
                         removeSpecificElementButton.setAttribute('class','remove-specific-element-button')
 
                         removeSpecificElementButton.addEventListener('click',()=>{
+                            console.log(removeSpecificElementButton.parentElement)
+                            DOMManipulation.removeElements(removeSpecificElementButton.parentElement)
                             //have it remove the specific elemennt hehe :D
                         })
                     }
