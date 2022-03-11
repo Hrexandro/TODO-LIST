@@ -197,7 +197,7 @@ const form = (function () {
             formContainer.appendChild(submitButton);
             submitButton.innerText = 'Submit'
             document.getElementById('submit-button').addEventListener('click', () => {
-                let checkListValuesArray = Array.from(document.getElementsByClassName('checklist-element')).map((el) => { return el.value })
+                let checkListValuesArray = Array.from(document.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
                 console.log("checklistvalues")
                 console.log(checkListValuesArray);
                 ToDos.createToDo(titleInput.value, descriptionInput.value, prioritySelect.value, dueDateInput.value, checkListValuesArray);
@@ -251,7 +251,7 @@ const DisplayingToDos = (function () {
             if (arrayOfTodos[j].priority !== 'None') {
                 DOMManipulation.putElementOnPage('p', undefined, undefined, `Priority: ${arrayOfTodos[j].priority}`, toDoContainer);
             }
-            if (arrayOfTodos[j].checkList !== []){
+            if (arrayOfTodos[j].checkList !== []) {
                 //set to have it displayed
                 //have the checklist including points to check and uncheck them
             }
@@ -295,5 +295,8 @@ const ToDos = (function () {
     }
 })();
 
-ToDos.createToDo('Finish the ToDo list app', 'Do all the things specified',undefined, 'High', ['make checklist clickable', 'improve style', 'add separate projects'])
+ToDos.createToDo('Finish the ToDo list app', 'Do all the things specified', undefined, 'High', [
+    { value: 'make checklist clickable', done: false },
+    { value: 'improve style', done: false },
+    { value: 'add separate projects', done: false }])
 DisplayingToDos.display(ToDos.toDoArray)
