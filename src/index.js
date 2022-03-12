@@ -21,7 +21,7 @@ make them draggable to switch places?
 import './style.css';
 
 const DOMManipulation = (function () {
-    function putElementOnPage(element, description, insertBeforeWhat, innerText, parent) {
+    function putElementOnPage(element, description, insertBeforeWhat, innerText, parent) {//perhaps make a different type for inputs and non-inputs
         console.log("element putted on page is", element)
         if (typeof element === 'string') {//if element is not object, meaning an already created element
             element = document.createElement(element);
@@ -219,7 +219,7 @@ const form = (function () {
 
 
     return {
-
+        checkCheckboxStatus,
     }
 
 })();
@@ -252,8 +252,19 @@ const DisplayingToDos = (function () {
                 DOMManipulation.putElementOnPage('p', undefined, undefined, `Priority: ${arrayOfTodos[j].priority}`, toDoContainer);
             }
             if (arrayOfTodos[j].checkList !== []) {
-                //set to have it displayed
-                //have the checklist including points to check and uncheck them
+                let ToDosChecklist = document.createElement('div');
+                DOMManipulation.putElementOnPage(ToDosChecklist, undefined, undefined, 'checklist:', toDoContainer);
+                for (let l = 0; l < arrayOfTodos[j].checkList.length; l++) {//add the checkable button here later
+                    DOMManipulation.putElementOnPage('p', undefined, undefined, arrayOfTodos[j].checkList[l].value, ToDosChecklist);
+                    let statusChecker = document.createElement('input')
+                    statusChecker.setAttribute('type', 'checkbox')
+                    DOMManipulation.putElementOnPage(statusChecker, undefined, undefined, undefined, ToDosChecklist);
+                    statusChecker.addEventListener('click', ()=>{
+                        //have unchecking them change the done-status of the appropriate checklist item
+                        form.checkCheckboxStatus(statusChecker,() => { console.log("checked") },() => { console.log("notchecked") })
+                    })    
+                }
+
             }
             console.log(arrayOfTodos[j])
             console.log(arrayOfTodos[j].checkList)
