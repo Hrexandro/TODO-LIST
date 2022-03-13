@@ -258,11 +258,20 @@ const DisplayingToDos = (function () {
                     DOMManipulation.putElementOnPage('p', undefined, undefined, arrayOfTodos[j].checkList[l].value, ToDosChecklist);
                     let statusChecker = document.createElement('input')
                     statusChecker.setAttribute('type', 'checkbox')
+                    statusChecker.setAttribute('id', `${arrayOfTodos[j].ordinal}-${l}`)//id is the ToDoOrdinal-checklist element number, e.g. 0-0, 0-1, 1-0 etc.
                     DOMManipulation.putElementOnPage(statusChecker, undefined, undefined, undefined, ToDosChecklist);
-                    statusChecker.addEventListener('click', ()=>{
-                        //have unchecking them change the done-status of the appropriate checklist item
-                        form.checkCheckboxStatus(statusChecker,() => { console.log("checked") },() => { console.log("notchecked") })
-                    })    
+                    statusChecker.addEventListener('click', (e) => {
+                        form.checkCheckboxStatus(statusChecker,
+                            () => {
+                                ToDos.toDoArray[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done = true;
+                                console.log(e.target.id + "checked")
+                            },
+                            () => {
+                                ToDos.toDoArray[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done = false;
+                                console.log(e.target.id + "notchecked")
+                            })
+                            console.log(ToDos.toDoArray)
+                    })
                 }
 
             }
@@ -280,11 +289,14 @@ const DisplayingToDos = (function () {
 const ToDos = (function () {
     console.log('create todo runs')
     let toDoArray = [];
+    let ordinal = 0;
     class toDo {
         constructor(title, description, priority, dueDate, checkList) {
             this.title = title;
             this.description = description;
             this.priority = priority;
+            this.ordinal = ordinal;
+            ordinal++;
             if (dueDate) {
                 this.dueDate = dueDate;
             }
@@ -302,7 +314,7 @@ const ToDos = (function () {
 
     return {
         createToDo,
-        toDoArray,
+        toDoArray,//restrict it later, to expose only a get of the arrat or perhaps particular properties to be changed, e.g. checklist status or priority
     }
 })();
 
