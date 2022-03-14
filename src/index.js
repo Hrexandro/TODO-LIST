@@ -7,11 +7,7 @@ checklist should be checkable in the final todo interface
 adding new positions and removing positions from checklist
 
 //////DO THIS NOW:
-display checklist with clickable check buttons
 
-
-
-add logic to take the values from the checklist
 add notes in the displayed checklist that you can add and edit
 add restrictions to form input to ensure aesthetic compatibility
 style everything to look nice and neat and clean and super cool
@@ -275,6 +271,11 @@ const DisplayingToDos = (function () {
                 }
 
             }
+            let addNotesButton = document.createElement('button');
+            DOMManipulation.putElementOnPage(addNotesButton, undefined, undefined, 'Add notes', toDoContainer);
+            addNotesButton.addEventListener('click',()=>{
+                console.log('add notes button clicked')
+            })
             console.log(arrayOfTodos[j])
             console.log(arrayOfTodos[j].checkList)
         }
