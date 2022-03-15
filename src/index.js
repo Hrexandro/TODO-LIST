@@ -7,6 +7,8 @@ checklist should be checkable in the final todo interface
 adding new positions and removing positions from checklist
 
 //////DO THIS NOW:
+make the save notes button save the text content of the input area as a property of the ToDo
+and then have a button appear to edit them
 
 add notes in the displayed checklist that you can add and edit
 add restrictions to form input to ensure aesthetic compatibility
@@ -274,7 +276,27 @@ const DisplayingToDos = (function () {
             let addNotesButton = document.createElement('button');
             DOMManipulation.putElementOnPage(addNotesButton, undefined, undefined, 'Add notes', toDoContainer);
             addNotesButton.addEventListener('click',()=>{
-                console.log('add notes button clicked')
+                addNotesButton.remove();
+                console.log('add notes button clicked');
+                let notesInputArea = document.createElement('input');
+                DOMManipulation.putElementOnPage(notesInputArea, undefined, undefined, undefined, toDoContainer);
+                let saveNotesButton = document.createElement('button')
+                DOMManipulation.putElementOnPage(saveNotesButton, undefined, undefined, 'save', toDoContainer);
+                saveNotesButton.addEventListener('click',()=>{
+                    //make it save the notes as a property of the ToDo
+                    let note = notesInputArea.value;
+                    console.log("save notes button clicked")
+                })
+
+                let deleteNotesButton = document.createElement('button')
+                DOMManipulation.putElementOnPage(deleteNotesButton, undefined, undefined, 'x', toDoContainer);
+                deleteNotesButton.addEventListener('click',()=>{
+                    console.log("delete notes button clicked")
+                    notesInputArea.remove();
+                    saveNotesButton.remove();
+                    deleteNotesButton.remove();
+                    DOMManipulation.putElementOnPage(addNotesButton, undefined, undefined, 'Add notes', toDoContainer);
+                })
             })
             console.log(arrayOfTodos[j])
             console.log(arrayOfTodos[j].checkList)
