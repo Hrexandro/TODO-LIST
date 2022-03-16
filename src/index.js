@@ -268,34 +268,60 @@ const DisplayingToDos = (function () {
                                 ToDos.toDoArray[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done = false;
                                 console.log(e.target.id + "notchecked")
                             })
-                            console.log(ToDos.toDoArray)
+                        console.log(ToDos.toDoArray)
                     })
                 }
 
             }
+            //have it display the notes here
+            // if (arrayOfTodos[j].notes) {
+            //     DOMManipulation.putElementOnPage etc etc
+            // }
             let addNotesButton = document.createElement('button');
             DOMManipulation.putElementOnPage(addNotesButton, undefined, undefined, 'Add notes', toDoContainer);
-            addNotesButton.addEventListener('click',()=>{
+            addNotesButton.addEventListener('click', () => {
                 addNotesButton.remove();
                 console.log('add notes button clicked');
+                let noteContainer = document.createElement('div');
+                DOMManipulation.putElementOnPage(noteContainer, undefined, undefined, undefined, toDoContainer);
+                noteContainer.setAttribute('class', 'note-container');
+
+                let displayedNote = document.createElement('p');//create the note element and insert it, no inner text yet
+                DOMManipulation.putElementOnPage(displayedNote, undefined, undefined, undefined, noteContainer)
+
                 let notesInputArea = document.createElement('input');
-                DOMManipulation.putElementOnPage(notesInputArea, undefined, undefined, undefined, toDoContainer);
+                DOMManipulation.putElementOnPage(notesInputArea, undefined, undefined, undefined, noteContainer);
                 let saveNotesButton = document.createElement('button')
-                DOMManipulation.putElementOnPage(saveNotesButton, undefined, undefined, 'save', toDoContainer);
-                saveNotesButton.addEventListener('click',()=>{
-                    //make it save the notes as a property of the ToDo
+                DOMManipulation.putElementOnPage(saveNotesButton, undefined, undefined, 'save', noteContainer);
+                saveNotesButton.addEventListener('click', () => {
+                    //make it save the notes as a property of the ToDo:
+                    //save the value of notesInputArea
                     let note = notesInputArea.value;
-                    console.log("save notes button clicked")
+                    arrayOfTodos[j].notes = note;
+                    //display the value of notes- add displaying it it is already set as well - as a paragraph
+                    displayedNote.innerText = note;
+                    //remove the input area
+                    //notesInputArea.remove();
+                    //DOMManipulation.removeElements(notesInputArea, saveNotesButton)
+
+                    noteContainer.remove();
+                    //remove the save button and substitute it with an edit button (remember to remove the edit button if the note is removed)
+                    //leave the remove button
+
+                    notesInputArea.value = 'note entered!'
+                    console.log("save notes button clicked");
+                    console.log(arrayOfTodos);
+                    //make sure the old note disappears after editing
                 })
 
                 let deleteNotesButton = document.createElement('button')
-                DOMManipulation.putElementOnPage(deleteNotesButton, undefined, undefined, 'x', toDoContainer);
-                deleteNotesButton.addEventListener('click',()=>{
+                DOMManipulation.putElementOnPage(deleteNotesButton, undefined, undefined, 'x', noteContainer);
+                deleteNotesButton.addEventListener('click', () => {
                     console.log("delete notes button clicked")
                     notesInputArea.remove();
                     saveNotesButton.remove();
                     deleteNotesButton.remove();
-                    DOMManipulation.putElementOnPage(addNotesButton, undefined, undefined, 'Add notes', toDoContainer);
+                    DOMManipulation.putElementOnPage(addNotesButton, undefined, undefined, 'Add notes', noteContainer);
                 })
             })
             console.log(arrayOfTodos[j])
