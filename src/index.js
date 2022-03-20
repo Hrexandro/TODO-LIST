@@ -7,8 +7,7 @@ checklist should be checkable in the final todo interface
 adding new positions and removing positions from checklist
 
 //////DO THIS NOW:
-make the save notes button save the text content of the input area as a property of the ToDo
-and then have a button appear to edit them
+    when clicking the remove not button then adding note again, the last note reappears
 
 add notes in the displayed checklist that you can add and edit
 add restrictions to form input to ensure aesthetic compatibility
@@ -56,10 +55,23 @@ const DOMManipulation = (function () {
             }
         }
     }
+    function removeAllChildren(element){
+        let counter = element.children.length;
+        for (let m = 0; m <= counter; m++) {
+            console.log('iteration'+m);
+            console.log('m is '+m)
+            console.log(element.children);
+            console.log(element.children[0]);
+            if (element.children[0]) {
+                element.children[0].remove();
+            }
+        }
+    }
 
     return {
         putElementOnPage,
-        removeElements
+        removeElements,
+        removeAllChildren
     }
 })();
 const form = (function () {
@@ -274,25 +286,29 @@ const DisplayingToDos = (function () {
 
             }
             //have it display the notes here
-            // if (arrayOfTodos[j].notes) {
-            //     DOMManipulation.putElementOnPage etc etc
-            // }
-            let addNotesButton = document.createElement('button');
-            DOMManipulation.putElementOnPage(addNotesButton, undefined, undefined, 'Add notes', toDoContainer);
 
+            
             let noteContainer = document.createElement('div');
             noteContainer.setAttribute('class', 'note-container');
             DOMManipulation.putElementOnPage(noteContainer, undefined, undefined, undefined, toDoContainer);
-
+            
+            let addNotesButton = document.createElement('button');
+           
             let displayedNote = document.createElement('p');//create the note element and insert it, no inner text yet
             let notesInputArea = document.createElement('input');
             let saveNotesButton = document.createElement('button');
             let deleteNotesButton = document.createElement('button');
             let editNoteButton = document.createElement('button');
 
+
+
             function noteEditState() {//remove add button, add input field (with the value set, if available), save and remove buttons
+                console.log('note edit state runs')
                 if (addNotesButton) {
                     addNotesButton.remove()
+                }
+                if (editNoteButton){
+                    editNoteButton.remove();
                 }
                 DOMManipulation.putElementOnPage(displayedNote, undefined, undefined, undefined, noteContainer)
                 if (arrayOfTodos[j].notes) {
@@ -306,11 +322,17 @@ const DisplayingToDos = (function () {
                 })
                 DOMManipulation.putElementOnPage(deleteNotesButton, undefined, undefined, 'x', noteContainer);
                 deleteNotesButton.addEventListener('click', () => {
-                    console.log("delete notes button clicked")
-                    notesInputArea.remove();
-                    saveNotesButton.remove();
-                    deleteNotesButton.remove();
-                    DOMManipulation.putElementOnPage(addNotesButton, undefined, undefined, 'Add notes', noteContainer);
+                    console.log('delete notes button clicked')
+                    console.log(arrayOfTodos[j].notes)
+                    arrayOfTodos[j].notes = undefined;
+
+                    console.log(arrayOfTodos[j].notes)
+                    noNoteState();
+
+                    // notesInputArea.remove();
+                    // saveNotesButton.remove();
+                    // deleteNotesButton.remove();
+                    // DOMManipulation.putElementOnPage(addNotesButton, undefined, undefined, 'Add notes', noteContainer);
                 })
 
             }
@@ -322,21 +344,28 @@ const DisplayingToDos = (function () {
                 displayedNote.innerText = notesInputArea.value;
                 //remove the input area
                 //notesInputArea.remove();
-                DOMManipulation.removeElements(notesInputArea, saveNotesButton)
+                DOMManipulation.removeElements(notesInputArea, saveNotesButton);
 
                 //noteContainer.remove();
                 //remove the save button and substitute it with an edit button (remember to remove the edit button if the note is removed)
-                DOMManipulation.putElementOnPage(editNoteButton, undefined, deleteNotesButton, 'Edit', noteContainer)
+                DOMManipulation.putElementOnPage(editNoteButton, undefined, deleteNotesButton, 'Edit', noteContainer);
                 editNoteButton.addEventListener('click',()=>{
-                    console.log("edit note button clickerd")
+                    console.log('edit note button clickerd');
+                    noteEditState();
                 })
                 //leave the remove button
-                console.log("save notes button clicked");
+                console.log('save notes button clicked');
                 console.log(arrayOfTodos);
                 //make sure the old note disappears after editing
             }
             function noNoteState(){//finish this, remove everything from the noteContainer, except the Add note button
-
+                //DOMManipulation.removeElements(Array.from(noteContainer.children));
+                console.log('no note state')
+                DOMManipulation.removeAllChildren(noteContainer);
+                DOMManipulation.putElementOnPage(addNotesButton, undefined, undefined, 'Add notes', noteContainer);
+                //console.log(Array.from(noteContainer.children));
+                //Array.from(document.getElementsByClassName('checklist-element-container')).forEach(DOMManipulation.removeElements);
+                //Array.from(noteContainer.children).forEach(DOMManipulation.removeElements)
             }
             addNotesButton.addEventListener('click', () => {
                 console.log(displayedNote)
@@ -352,8 +381,15 @@ const DisplayingToDos = (function () {
 
 
             })
+            if (arrayOfTodos[j].notes) {//notes at start
+                noteEditState();
+            }
+            else {
+                noNoteState();
+            }
             console.log(arrayOfTodos[j])
             console.log(arrayOfTodos[j].checkList)
+            console.log('notes' + arrayOfTodos[j].notes)
         }
     }
 
