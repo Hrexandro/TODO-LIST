@@ -7,7 +7,7 @@ checklist should be checkable in the final todo interface
 adding new positions and removing positions from checklist
 
 //////DO THIS NOW:
-    when clicking the remove not button then adding note again, the last note reappears
+have enter when editing or adding note work as a click
 
 add notes in the displayed checklist that you can add and edit
 add restrictions to form input to ensure aesthetic compatibility
@@ -324,10 +324,13 @@ const DisplayingToDos = (function () {
                 deleteNotesButton.addEventListener('click', () => {
                     console.log('delete notes button clicked')
                     console.log(arrayOfTodos[j].notes)
-                    arrayOfTodos[j].notes = undefined;
+
 
                     console.log(arrayOfTodos[j].notes)
                     noNoteState();
+                    console.log('no note state')
+                    console.log('todos.note!!!!!!!!!!!!!!!!!!'+arrayOfTodos[j].notes)
+                    console.log('notesinputareea.value'+notesInputArea.value)
 
                     // notesInputArea.remove();
                     // saveNotesButton.remove();
@@ -362,6 +365,9 @@ const DisplayingToDos = (function () {
                 //DOMManipulation.removeElements(Array.from(noteContainer.children));
                 console.log('no note state')
                 DOMManipulation.removeAllChildren(noteContainer);
+                notesInputArea.value=""
+                arrayOfTodos[j].notes = undefined;
+                displayedNote.innerText = ""
                 DOMManipulation.putElementOnPage(addNotesButton, undefined, undefined, 'Add notes', noteContainer);
                 //console.log(Array.from(noteContainer.children));
                 //Array.from(document.getElementsByClassName('checklist-element-container')).forEach(DOMManipulation.removeElements);
