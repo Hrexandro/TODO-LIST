@@ -7,7 +7,8 @@ checklist should be checkable in the final todo interface
 adding new positions and removing positions from checklist
 
 //////DO THIS NOW:
-have enter when editing or adding note work as a click
+have added the 'status' property - have it be editable in the displayed toDo - currently displayed at the end, figure out where to put it since
+so many parameters are optional
 
 add notes in the displayed checklist that you can add and edit
 add restrictions to form input to ensure aesthetic compatibility
@@ -376,16 +377,8 @@ const DisplayingToDos = (function () {
             addNotesButton.addEventListener('click', () => {
                 console.log(displayedNote)
                 noteEditState();
-
-
-
                 //addNotesButton.remove();
                 console.log('add notes button clicked');
-
-
-
-
-
             })
             if (arrayOfTodos[j].notes) {//notes at start
                 noteEditState();
@@ -393,6 +386,8 @@ const DisplayingToDos = (function () {
             else {
                 noNoteState();
             }
+
+            DOMManipulation.putElementOnPage('p', undefined, undefined, arrayOfTodos[j].status, noteContainer)
             console.log(arrayOfTodos[j])
             console.log(arrayOfTodos[j].checkList)
             console.log('notes' + arrayOfTodos[j].notes)
@@ -415,6 +410,7 @@ const ToDos = (function () {
             this.description = description;
             this.priority = priority;
             this.ordinal = ordinal;
+            this.status = "open"
             ordinal++;
             if (dueDate) {
                 this.dueDate = dueDate;
