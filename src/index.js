@@ -10,6 +10,10 @@ adding new positions and removing positions from checklist
 have added the 'status' property - have it be editable in the displayed toDo - currently displayed at the end, figure out where to put it since
 so many parameters are optional
 
+set how checklist button works when all the checklist input fields are deleted
+
+after deleting notes, it deleted also displayed status and also the ordering is weird
+
 add notes in the displayed checklist that you can add and edit
 add restrictions to form input to ensure aesthetic compatibility
 style everything to look nice and neat and clean and super cool
@@ -387,7 +391,7 @@ const DisplayingToDos = (function () {
                 noNoteState();
             }
 
-            DOMManipulation.putElementOnPage('p', undefined, undefined, arrayOfTodos[j].status, noteContainer)
+            DOMManipulation.putElementOnPage('p', undefined, undefined, `Status: ${arrayOfTodos[j].toDoStatus}`, toDoContainer)
             console.log(arrayOfTodos[j])
             console.log(arrayOfTodos[j].checkList)
             console.log('notes' + arrayOfTodos[j].notes)
@@ -410,7 +414,7 @@ const ToDos = (function () {
             this.description = description;
             this.priority = priority;
             this.ordinal = ordinal;
-            this.status = "open"
+            this.toDoStatus = "open"
             ordinal++;
             if (dueDate) {
                 this.dueDate = dueDate;
