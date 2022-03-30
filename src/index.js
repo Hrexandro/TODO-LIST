@@ -1,23 +1,27 @@
-/*Displaying created todos
-divide them into projects
-filter finished and unfinished
-add possible checklist input
-
-checklist should be checkable in the final todo interface
-adding new positions and removing positions from checklist
-
+/*
 //////DO THIS NOW:
-have added the 'status' property - have it be editable in the displayed toDo - currently displayed at the end, figure out where to put it since
-so many parameters are optional
+- have added the 'status' property-done
 
-set how checklist button works when all the checklist input fields are deleted
+- save the list of todos to local storage and retrieve it as necessary - BUG: when adding new todos they do not update on the screen,
+only after refreshing they get retrieved from local storage - the counter based on the todoarray length ends before reaching them
 
-after deleting notes, it deleted also displayed status and also the ordering is weird
+- make sure the list of todos is updated in local storage whenever they are edited
 
-add notes in the displayed checklist that you can add and edit
-add restrictions to form input to ensure aesthetic compatibility
-style everything to look nice and neat and clean and super cool
-make them draggable to switch places?
+- switch from writing things to do here, to having them in the app itself :P
+
+- set how checklist button works when all the checklist input fields are deleted
+
+
+
+-add restrictions to form input to ensure aesthetic compatibility
+
+- style everything to look nice and neat and clean and super cool
+
+- make them draggable to switch places?
+
+- sort them by different criteria
+
+- divide them into projects
 */
 
 import './style.css';
@@ -60,11 +64,11 @@ const DOMManipulation = (function () {
             }
         }
     }
-    function removeAllChildren(element){
+    function removeAllChildren(element) {
         let counter = element.children.length;
         for (let m = 0; m <= counter; m++) {
-            console.log('iteration'+m);
-            console.log('m is '+m)
+            console.log('iteration' + m);
+            console.log('m is ' + m)
             console.log(element.children);
             console.log(element.children[0]);
             if (element.children[0]) {
@@ -252,8 +256,13 @@ const DisplayingToDos = (function () {
     }
 
     function display(arrayOfTodos) {
+
+
+        removeAllDisplayedContent()        //refresh when displaying
+        
         console.log('display todo starts');
         for (let j = 0; j < arrayOfTodos.length; j++) {
+            console.log('the length of array of todos is '+arrayOfTodos.length)
             let toDoContainer = document.createElement('div');
             contentDisplay.appendChild(toDoContainer);
             DOMManipulation.putElementOnPage('p', undefined, undefined, `Title: ${arrayOfTodos[j].title}`, toDoContainer);
@@ -292,13 +301,13 @@ const DisplayingToDos = (function () {
             }
             //have it display the notes here
 
-            
+
             let noteContainer = document.createElement('div');
             noteContainer.setAttribute('class', 'note-container');
             DOMManipulation.putElementOnPage(noteContainer, undefined, undefined, undefined, toDoContainer);
-            
+
             let addNotesButton = document.createElement('button');
-           
+
             let displayedNote = document.createElement('p');//create the note element and insert it, no inner text yet
             let notesInputArea = document.createElement('input');
             let saveNotesButton = document.createElement('button');
@@ -312,7 +321,7 @@ const DisplayingToDos = (function () {
                 if (addNotesButton) {
                     addNotesButton.remove()
                 }
-                if (editNoteButton){
+                if (editNoteButton) {
                     editNoteButton.remove();
                 }
                 DOMManipulation.putElementOnPage(displayedNote, undefined, undefined, undefined, noteContainer)
@@ -334,8 +343,8 @@ const DisplayingToDos = (function () {
                     console.log(arrayOfTodos[j].notes)
                     noNoteState();
                     console.log('no note state')
-                    console.log('todos.note!!!!!!!!!!!!!!!!!!'+arrayOfTodos[j].notes)
-                    console.log('notesinputareea.value'+notesInputArea.value)
+                    console.log('todos.note!!!!!!!!!!!!!!!!!!' + arrayOfTodos[j].notes)
+                    console.log('notesinputareea.value' + notesInputArea.value)
 
                     // notesInputArea.remove();
                     // saveNotesButton.remove();
@@ -357,7 +366,7 @@ const DisplayingToDos = (function () {
                 //noteContainer.remove();
                 //remove the save button and substitute it with an edit button (remember to remove the edit button if the note is removed)
                 DOMManipulation.putElementOnPage(editNoteButton, undefined, deleteNotesButton, 'Edit', noteContainer);
-                editNoteButton.addEventListener('click',()=>{
+                editNoteButton.addEventListener('click', () => {
                     console.log('edit note button clickerd');
                     noteEditState();
                 })
@@ -366,11 +375,11 @@ const DisplayingToDos = (function () {
                 console.log(arrayOfTodos);
                 //make sure the old note disappears after editing
             }
-            function noNoteState(){//finish this, remove everything from the noteContainer, except the Add note button
+            function noNoteState() {//finish this, remove everything from the noteContainer, except the Add note button
                 //DOMManipulation.removeElements(Array.from(noteContainer.children));
                 console.log('no note state')
                 DOMManipulation.removeAllChildren(noteContainer);
-                notesInputArea.value=""
+                notesInputArea.value = ""
                 arrayOfTodos[j].notes = undefined;
                 displayedNote.innerText = ""
                 DOMManipulation.putElementOnPage(addNotesButton, undefined, undefined, 'Add notes', noteContainer);
@@ -400,14 +409,19 @@ const DisplayingToDos = (function () {
 
     return {
         display,
-        removeAllDisplayedContent,
+        removeAllDisplayedContent
     }
 })();
 
 const ToDos = (function () {
     console.log('create todo runs')
-    let toDoArray = [];
+    let toDoArray = [];//if there is something in localStorage these get changed
     let ordinal = 0;
+    if (localStorage.getItem('toDoArray')) {
+        toDoArray = JSON.parse(localStorage.getItem('toDoArray'))
+        ordinal = toDoArray.length-1
+    }
+    
     class toDo {
         constructor(title, description, priority, dueDate, checkList) {
             this.title = title;
@@ -428,7 +442,9 @@ const ToDos = (function () {
         console.log('TODO creation start')
         let newToDo = new toDo(title, description, dueDate, priority, checkList)
         toDoArray.push(newToDo)
-        console.log(toDoArray)
+        console.log('to do array after pushing the new to do is'+JSON.stringify(toDoArray))
+        dealingWithLocalStorage.updateLocalStorage('toDoArray', toDoArray)
+        console.log('attention, this is local storage'+localStorage.getItem('toDoArray'))
     }
 
     return {
@@ -437,8 +453,34 @@ const ToDos = (function () {
     }
 })();
 
-ToDos.createToDo('Finish the ToDo list app', 'Do all the things specified', undefined, 'High', [
-    { value: 'make checklist clickable', done: false },
-    { value: 'improve style', done: false },
-    { value: 'add separate projects', done: false }])
-DisplayingToDos.display(ToDos.toDoArray)
+// ToDos.createToDo('Finish the ToDo list app', 'Do all the things specified', undefined, 'High', [
+//     { value: 'make checklist clickable', done: false },
+//     { value: 'improve style', done: false },
+//     { value: 'add separate projects', done: false }])
+// DisplayingToDos.display(ToDos.toDoArray)
+
+
+const dealingWithLocalStorage = (function () {
+
+    function updateLocalStorage(keyName, value) {
+        localStorage.setItem(keyName, JSON.stringify(value))
+    }
+
+    // function getElementFromLocalStorage(keyName) {
+    //     if (localStorage.getItem(keyName)) {//if something has been set in the local storage, then retrieve
+    //         return JSON.parse(localStorage.getItem(`${keyName}`))//or just keyName?
+    //     }
+    // }
+
+
+    return {
+        updateLocalStorage,
+        // getElementFromLocalStorage
+    }
+})();
+if (localStorage.getItem('toDoArray')) {//if something has been set in the local storage, then retrieve
+    ToDos.toDoArray = JSON.parse(localStorage.getItem('toDoArray'))
+    console.log(JSON.stringify(ToDos.toDoArray))
+    DisplayingToDos.display(JSON.parse(localStorage.getItem('toDoArray')))
+}
+console.log('attention, this is local storage'+localStorage.getItem('toDoArray'))
