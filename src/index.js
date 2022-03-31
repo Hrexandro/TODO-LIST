@@ -256,11 +256,11 @@ const DisplayingToDos = (function () {
     }
 
     function display(arrayOfTodos) {
-
+        console.log('display todo starts');
 
         removeAllDisplayedContent()        //refresh when displaying
-        
-        console.log('display todo starts');
+        console.log(JSON.stringify(ToDos.toDoArray))
+
         for (let j = 0; j < arrayOfTodos.length; j++) {
             console.log('the length of array of todos is '+arrayOfTodos.length)
             let toDoContainer = document.createElement('div');
@@ -439,12 +439,13 @@ const ToDos = (function () {
         }
     }
     function createToDo(title, description, dueDate, priority, checkList) {
-        console.log('TODO creation start')
-        let newToDo = new toDo(title, description, dueDate, priority, checkList)
-        toDoArray.push(newToDo)
-        console.log('to do array after pushing the new to do is'+JSON.stringify(toDoArray))
-        dealingWithLocalStorage.updateLocalStorage('toDoArray', toDoArray)
-        console.log('attention, this is local storage'+localStorage.getItem('toDoArray'))
+        console.log('TODO creation start');
+        let newToDo = new toDo(title, description, dueDate, priority, checkList);
+        console.log('to do array BEFORE pushing the new to do is'+JSON.stringify(toDoArray));
+        ToDos.toDoArray.push(newToDo);
+        console.log('to do array after pushing the new to do is'+JSON.stringify(toDoArray));
+        dealingWithLocalStorage.updateLocalStorage('toDoArray', toDoArray);
+        console.log('attention, this is local storage'+localStorage.getItem('toDoArray'));
     }
 
     return {
@@ -484,3 +485,6 @@ if (localStorage.getItem('toDoArray')) {//if something has been set in the local
     DisplayingToDos.display(JSON.parse(localStorage.getItem('toDoArray')))
 }
 console.log('attention, this is local storage'+localStorage.getItem('toDoArray'))
+function getToDoArray(){
+    console.log(ToDos.toDoArray)
+}
