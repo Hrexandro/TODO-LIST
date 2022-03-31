@@ -2,10 +2,11 @@
 //////DO THIS NOW:
 - have added the 'status' property-done
 
-- save the list of todos to local storage and retrieve it as necessary - BUG: when adding new todos they do not update on the screen,
-only after refreshing they get retrieved from local storage - the counter based on the todoarray length ends before reaching them
+- save the list of todos to local storage and retrieve it as necessary -done
 
-- make sure the list of todos is updated in local storage whenever they are edited
+- add option to remove todos or mark them as done or something - DO THIS
+
+- make sure the list of todos is updated in local storage whenever they are edited (changing notes and checkbox status etc)
 
 - switch from writing things to do here, to having them in the app itself :P
 
@@ -262,7 +263,7 @@ const DisplayingToDos = (function () {
         console.log(JSON.stringify(ToDos.toDoArray))
 
         for (let j = 0; j < arrayOfTodos.length; j++) {
-            console.log('the length of array of todos is '+arrayOfTodos.length)
+            console.log('the length of array of todos is ' + arrayOfTodos.length)
             let toDoContainer = document.createElement('div');
             contentDisplay.appendChild(toDoContainer);
             DOMManipulation.putElementOnPage('p', undefined, undefined, `Title: ${arrayOfTodos[j].title}`, toDoContainer);
@@ -401,6 +402,16 @@ const DisplayingToDos = (function () {
             }
 
             DOMManipulation.putElementOnPage('p', undefined, undefined, `Status: ${arrayOfTodos[j].toDoStatus}`, toDoContainer)
+            let deleteToDoButton = document.createElement('button')
+            DOMManipulation.putElementOnPage(deleteToDoButton, undefined, undefined, 'delete', toDoContainer)
+            deleteToDoButton.addEventListener('click', () => {
+                console.log('delete todo clicked')
+                arrayOfTodos.splice(j, 1);
+                toDoContainer.remove();
+                dealingWithLocalStorage.updateLocalStorage('toDoArray', arrayOfTodos);
+                console.log('to do array after deleting element' + JSON.stringify(arrayOfTodos));
+                console.log('attention, this is local storage' + localStorage.getItem('toDoArray'));
+            })
             console.log(arrayOfTodos[j])
             console.log(arrayOfTodos[j].checkList)
             console.log('notes' + arrayOfTodos[j].notes)
@@ -419,9 +430,9 @@ const ToDos = (function () {
     let ordinal = 0;
     if (localStorage.getItem('toDoArray')) {
         toDoArray = JSON.parse(localStorage.getItem('toDoArray'))
-        ordinal = toDoArray.length-1
+        ordinal = toDoArray.length - 1
     }
-    
+
     class toDo {
         constructor(title, description, priority, dueDate, checkList) {
             this.title = title;
@@ -441,11 +452,11 @@ const ToDos = (function () {
     function createToDo(title, description, dueDate, priority, checkList) {
         console.log('TODO creation start');
         let newToDo = new toDo(title, description, dueDate, priority, checkList);
-        console.log('to do array BEFORE pushing the new to do is'+JSON.stringify(toDoArray));
+        console.log('to do array BEFORE pushing the new to do is' + JSON.stringify(toDoArray));
         ToDos.toDoArray.push(newToDo);
-        console.log('to do array after pushing the new to do is'+JSON.stringify(toDoArray));
+        console.log('to do array after pushing the new to do is' + JSON.stringify(toDoArray));
         dealingWithLocalStorage.updateLocalStorage('toDoArray', toDoArray);
-        console.log('attention, this is local storage'+localStorage.getItem('toDoArray'));
+        console.log('attention, this is local storage' + localStorage.getItem('toDoArray'));
     }
 
     return {
@@ -483,8 +494,4 @@ if (localStorage.getItem('toDoArray')) {//if something has been set in the local
     ToDos.toDoArray = JSON.parse(localStorage.getItem('toDoArray'))
     console.log(JSON.stringify(ToDos.toDoArray))
     DisplayingToDos.display(JSON.parse(localStorage.getItem('toDoArray')))
-}
-console.log('attention, this is local storage'+localStorage.getItem('toDoArray'))
-function getToDoArray(){
-    console.log(ToDos.toDoArray)
 }
