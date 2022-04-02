@@ -1,5 +1,12 @@
 /*
 //////DO THIS NOW:
+
+CURRENT PROBLEM: if new element is pushed to ToDos.toDoArray, it does not get saved in the local storage and accessed later
+if new element if pushed to toDoArray only, they do not appear on the screen, the toDoArray is seemingly updated or not, depending where you check
+ (yes in the updating function, no in the dipslaying function [called later!]) the display is only updated after refreshing the page
+
+ POSSIBLE SOLUTION - update the local storage then retrieve the entire array from it or something
+
 - have added the 'status' property-done
 
 - save the list of todos to local storage and retrieve it as necessary -done
@@ -425,12 +432,12 @@ const DisplayingToDos = (function () {
 })();
 
 const ToDos = (function () {
-    console.log('create todo runs')
+    console.log('create todo runs');
     let toDoArray = [];//if there is something in localStorage these get changed
     let ordinal = 0;
     if (localStorage.getItem('toDoArray')) {
-        toDoArray = JSON.parse(localStorage.getItem('toDoArray'))
-        ordinal = toDoArray.length - 1
+        toDoArray = JSON.parse(localStorage.getItem('toDoArray'));
+        ordinal = toDoArray.length;
     }
 
     class toDo {
@@ -449,13 +456,15 @@ const ToDos = (function () {
             }
         }
     }
+
+    // function pushElementIntoToDoArray(element){
+    //     ToDos.toDoArray.push(element)
+    // }
     function createToDo(title, description, dueDate, priority, checkList) {
         console.log('TODO creation start');
         let newToDo = new toDo(title, description, dueDate, priority, checkList);
-        console.log('to do array BEFORE pushing the new to do is' + JSON.stringify(toDoArray));
         ToDos.toDoArray.push(newToDo);
-        console.log('to do array after pushing the new to do is' + JSON.stringify(toDoArray));
-        dealingWithLocalStorage.updateLocalStorage('toDoArray', toDoArray);
+        dealingWithLocalStorage.updateLocalStorage('toDoArray', ToDos.toDoArray);
         console.log('attention, this is local storage' + localStorage.getItem('toDoArray'));
     }
 
@@ -490,6 +499,7 @@ const dealingWithLocalStorage = (function () {
         // getElementFromLocalStorage
     }
 })();
+console.log('attention, this is local storage' + localStorage.getItem('toDoArray'));
 if (localStorage.getItem('toDoArray')) {//if something has been set in the local storage, then retrieve
     ToDos.toDoArray = JSON.parse(localStorage.getItem('toDoArray'))
     console.log(JSON.stringify(ToDos.toDoArray))
