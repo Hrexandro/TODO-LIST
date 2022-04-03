@@ -296,18 +296,23 @@ const DisplayingToDos = (function () {
                     let statusChecker = document.createElement('input')
                     statusChecker.setAttribute('type', 'checkbox')
                     statusChecker.setAttribute('id', `${arrayOfTodos[j].ordinal}-${l}`)//id is the ToDoOrdinal-checklist element number, e.g. 0-0, 0-1, 1-0 etc.
+                    console.log('!CHECK!'+arrayOfTodos[j].checkList[l].done)
+                    if (arrayOfTodos[j].checkList[l].done){
+                        console.log('!CHECK! runs')
+                        statusChecker.checked = true;
+                    }
                     DOMManipulation.putElementOnPage(statusChecker, undefined, undefined, undefined, ToDosChecklist);
                     statusChecker.addEventListener('click', (e) => {
                         form.checkCheckboxStatus(statusChecker,
                             () => {
-                                ToDos.toDoArray[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done = true;
+                                arrayOfTodos[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done = true;
                                 console.log(e.target.id + "checked")
                             },
                             () => {
-                                ToDos.toDoArray[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done = false;
+                                arrayOfTodos[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done = false;
                                 console.log(e.target.id + "notchecked")
                             })
-                        console.log(ToDos.toDoArray)
+                        console.log(arrayOfTodos)
                     })
                 }
 
@@ -512,7 +517,7 @@ const dealingWithLocalStorage = (function () {
     }
 })();
 console.log('attention, this is local storage' + localStorage.getItem('toDoArray'));
-if (localStorage.getItem('toDoArray')) {//if something has been set in the local storage, then retrieve
+if (localStorage.getItem('toDoArray')) {//if something has been set in the local storage, then retrieve on startup
     ToDos.toDoArray = JSON.parse(localStorage.getItem('toDoArray'))
     console.log(JSON.stringify(ToDos.toDoArray))
     DisplayingToDos.display(JSON.parse(localStorage.getItem('toDoArray')))
