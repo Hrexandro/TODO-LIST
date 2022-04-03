@@ -1,15 +1,6 @@
 /*
 //////DO THIS NOW:
 
-CURRENT PROBLEM: if new element is pushed to ToDos.toDoArray, it does not get saved in the local storage and accessed later
-if new element if pushed to toDoArray only, they do not appear on the screen, the toDoArray is seemingly updated or not, depending where you check
- (yes in the updating function, no in the dipslaying function [called later!]) the display is only updated after refreshing the page
-
- POSSIBLE SOLUTION - update the local storage then retrieve the entire array from it or something
-
-- have added the 'status' property-done
-
-- save the list of todos to local storage and retrieve it as necessary -done
 
 - add option to remove todos or mark them as done or something - DO THIS
 
@@ -33,6 +24,19 @@ if new element if pushed to toDoArray only, they do not appear on the screen, th
 */
 
 import './style.css';
+
+
+//////////////////////for testing purposes only
+/* <button id="checklocalstorage-button">check local storage</button>
+<button id="check todos array-button">check array of todos</button> */
+document.getElementById('checklocalstorage-button').addEventListener('click',()=>{
+    console.log(JSON.stringify(localStorage.getItem('toDoArray')))
+
+})
+document.getElementById('check todos array-button').addEventListener('click',()=>{
+    console.log(JSON.stringify(ToDos.toDoArray))
+})
+////////////////
 
 const DOMManipulation = (function () {
     function putElementOnPage(element, description, insertBeforeWhat, innerText, parent) {//perhaps make a different type for inputs and non-inputs
@@ -272,6 +276,7 @@ const DisplayingToDos = (function () {
         for (let j = 0; j < arrayOfTodos.length; j++) {
             console.log('the length of array of todos is ' + arrayOfTodos.length)
             let toDoContainer = document.createElement('div');
+            toDoContainer.setAttribute('class','todo-container')
             contentDisplay.appendChild(toDoContainer);
             DOMManipulation.putElementOnPage('p', undefined, undefined, `Title: ${arrayOfTodos[j].title}`, toDoContainer);
             if (arrayOfTodos[j].description) {
@@ -422,6 +427,13 @@ const DisplayingToDos = (function () {
             console.log(arrayOfTodos[j])
             console.log(arrayOfTodos[j].checkList)
             console.log('notes' + arrayOfTodos[j].notes)
+
+            toDoContainer.addEventListener('click',()=>{
+                console.log('to do container clicked')
+                dealingWithLocalStorage.updateLocalStorage('toDoArray', arrayOfTodos);
+                console.log('to do array after clicking' + JSON.stringify(arrayOfTodos));
+                console.log('attention, this is local storage' + localStorage.getItem('toDoArray'));
+            })
         }
     }
 
