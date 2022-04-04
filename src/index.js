@@ -2,9 +2,6 @@
 //////DO THIS NOW:
 
 
-- add option to remove todos or mark them as done or something - DO THIS
-
-- make sure the list of todos is updated in local storage whenever they are edited (changing notes and checkbox status etc)
 
 - switch from writing things to do here, to having them in the app itself :P
 
@@ -350,7 +347,7 @@ const DisplayingToDos = (function () {
                 DOMManipulation.putElementOnPage(notesInputArea, undefined, undefined, undefined, noteContainer);
                 DOMManipulation.putElementOnPage(saveNotesButton, undefined, undefined, 'save', noteContainer);
                 saveNotesButton.addEventListener('click', () => {
-                    displayNoteState();
+                    displayNoteState(notesInputArea.value);
                 })
                 DOMManipulation.putElementOnPage(deleteNotesButton, undefined, undefined, 'x', noteContainer);
                 deleteNotesButton.addEventListener('click', () => {
@@ -371,12 +368,13 @@ const DisplayingToDos = (function () {
                 })
 
             }
-            function displayNoteState() {//display the note, remove input area, remove save button, add edit button
+            function displayNoteState(value) {//display the note, remove input area, remove save button, add edit button
+                console.log('display note state')
                 //make it save the notes as a property of the ToDo:
                 //save the value of notesInputArea
-                arrayOfTodos[j].notes = notesInputArea.value;
+                arrayOfTodos[j].notes = value;
                 //display the value of notes- add displaying it it is already set as well - as a paragraph
-                displayedNote.innerText = notesInputArea.value;
+                displayedNote.innerText = value;
                 //remove the input area
                 //notesInputArea.remove();
                 DOMManipulation.removeElements(notesInputArea, saveNotesButton);
@@ -413,6 +411,7 @@ const DisplayingToDos = (function () {
             })
             if (arrayOfTodos[j].notes) {//notes at start
                 noteEditState();
+                displayNoteState(arrayOfTodos[j].notes);
             }
             else {
                 noNoteState();
