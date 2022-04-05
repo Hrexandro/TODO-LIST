@@ -1,24 +1,3 @@
-/*
-//////DO THIS NOW:
-
--unchecking checklist in the input section throws an error and does not work correctly - line 190-195
-
-
-- switch from writing things to do here, to having them in the app itself :P
-
--add restrictions to form input to ensure aesthetic compatibility
-
-- style everything to look nice and neat and clean and super cool
-
-- make them draggable to switch places?
-
-- sort them by different criteria
-
-- divide them into projects
-
-- limit which parts of toDoArray are exposed
-*/
-
 import './style.css';
 
 
@@ -279,7 +258,7 @@ const DisplayingToDos = (function () {
             if (arrayOfTodos[j].priority !== 'None') {
                 DOMManipulation.putElementOnPage('p', undefined, undefined, `Priority: ${arrayOfTodos[j].priority}`, toDoContainer);
             }
-            if (arrayOfTodos[j].checkList !== []) {
+            if (arrayOfTodos[j].checkList.length > 0) {
                 let ToDosChecklist = document.createElement('div');
                 DOMManipulation.putElementOnPage(ToDosChecklist, undefined, undefined, 'checklist:', toDoContainer);
                 for (let l = 0; l < arrayOfTodos[j].checkList.length; l++) {

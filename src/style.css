@@ -25,6 +25,10 @@ body {
     height: 100vh;
 }
 
+#content-display{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 300px));
+}
 .todo-container{
     margin: 20px;
     position: relative;
