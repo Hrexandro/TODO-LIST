@@ -70,18 +70,11 @@ const DOMManipulation = (function () {
         removeAllChildren
     }
 })();
+
+
 const form = (function () {
     const addButton = document.getElementById('add-button');
     const formContainer = document.getElementById('form-container')
-
-    let titleInput = document.createElement('input');
-    let descriptionInput = document.createElement('input');
-    let deadLineInput = document.createElement('input');
-    let dueDateInput = document.createElement('input');
-    dueDateInput.type = 'date';
-    let prioritySelect = document.createElement('select');
-
-    let checkListElementCounter = 0;
 
     function checkCheckboxStatus(checkBoxElement, ifChecked, ifUnchecked) {//make sure the parameters are functions
         if (checkBoxElement.checked) {
@@ -91,136 +84,150 @@ const form = (function () {
             ifUnchecked();
         }
     }
+    function createFormToDefineToDo(container){//also use for the edited form of a finished todo
+        let titleInput = document.createElement('input');
+        let descriptionInput = document.createElement('input');
+        let deadLineInput = document.createElement('input');
+        let dueDateInput = document.createElement('input');
+        dueDateInput.type = 'date';
+        let prioritySelect = document.createElement('select');
+    
+        let checkListElementCounter = 0;
+        let inputContainer = document.createElement('div');
+        inputContainer.id = 'input-container';
+        container.appendChild(inputContainer);
+        let saveButton = document.createElement('button');
+        saveButton.setAttribute('id', 'save-button')
+
+        DOMManipulation.putElementOnPage(titleInput, 'Title', undefined, undefined, inputContainer);
+        DOMManipulation.putElementOnPage(descriptionInput, 'Description', undefined, undefined, inputContainer);
+
+        DOMManipulation.putElementOnPage(deadLineInput, 'Deadline', undefined, undefined, inputContainer);
+        deadLineInput.type = 'checkbox';
+
+        function addDueDateInputOnPage() {
+            console.log("add due date on page runs")
+            console.log("due date input is", dueDateInput)
+            DOMManipulation.putElementOnPage(dueDateInput, 'Due-date', document.querySelector('label[for=Checklist]'), undefined, inputContainer);
+        }
+
+        deadLineInput.addEventListener('click', () => {
+            checkCheckboxStatus(deadLineInput, addDueDateInputOnPage, () => {
+                DOMManipulation.removeElements(document.getElementById("Due-date"), document.querySelector('label[for=Due-date]'));
+            });
+        });
+        let checkListInput = document.createElement('input');
+        checkListInput.type = 'checkbox';
+        DOMManipulation.putElementOnPage(checkListInput, 'Checklist', undefined, undefined, inputContainer);
+        checkListInput.addEventListener('click', () => {
+
+
+            checkCheckboxStatus(checkListInput, () => {
+                let checklistContainer = document.createElement('div');
+                DOMManipulation.putElementOnPage(checklistContainer, undefined, document.querySelector('label[for=Priority]'), undefined, inputContainer);
+                checklistContainer.setAttribute('id', 'checklist-container');
+
+                function createNextItem() {
+                    let checkListElementContainer = document.createElement('div');
+                    let elementNumber = checkListElementCounter;
+                    checkListElementContainer.setAttribute('id', elementNumber);
+                    checkListElementContainer.setAttribute('class', 'checklist-element-container');
+                    checkListElementCounter++;
+
+                    DOMManipulation.putElementOnPage(
+
+                        checkListElementContainer,
+                        undefined,
+                        undefined,
+                        undefined,
+                        checklistContainer);
+
+                    let checkListElement = document.createElement('input');
+                    checkListElement.setAttribute('class', 'checklist-element')
+
+                    DOMManipulation.putElementOnPage(checkListElement, undefined, undefined, undefined, checkListElementContainer);
+
+                    let addNextElementButton = document.createElement('button');
+                    DOMManipulation.putElementOnPage(addNextElementButton, undefined, undefined, "+", checkListElementContainer);
+                    addNextElementButton.setAttribute('class', 'add-next-element-button')
+
+                    addNextElementButton.addEventListener('click', () => {
+                        DOMManipulation.removeElements(document.getElementsByClassName('add-next-element-button')[0])
+
+                        createNextItem()
+                    })
+
+                    let removeSpecificElementButton = document.createElement('button');
+                    DOMManipulation.putElementOnPage(removeSpecificElementButton, undefined, undefined, "remove", checkListElementContainer);
+                    removeSpecificElementButton.setAttribute('class', 'remove-specific-element-button')
+
+                    removeSpecificElementButton.addEventListener('click', () => {
+                        DOMManipulation.removeElements(removeSpecificElementButton.parentElement)
+                    })
+                }
+                createNextItem();
+
+
+
+            },
+                () => {
+                    document.getElementById('checklist-container').remove();
+                }
+
+            );
+
+        })
+        DOMManipulation.putElementOnPage(prioritySelect, 'Priority', undefined, undefined, inputContainer);
+        function createSelectOption(text) {
+            let option = document.createElement('option');
+            prioritySelect.appendChild(option);
+            option.value = text;
+            option.innerText = text;
+        }
+        createSelectOption('None');
+        createSelectOption('Low');
+        createSelectOption('Medium');
+        createSelectOption('High');
+
+
+
+        container.appendChild(saveButton);
+        saveButton.innerText = 'save'
+        document.getElementById('save-button').addEventListener('click', () => {
+            let checkListValuesArray = Array.from(document.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
+            console.log("checklistvalues")
+            console.log(checkListValuesArray);
+            ToDos.createToDo(titleInput.value, descriptionInput.value, prioritySelect.value, dueDateInput.value, checkListValuesArray);
+
+
+            for (let i = 0; i < document.getElementsByTagName("input").length; i++) {//clear the form values
+                document.getElementsByTagName("input")[i].value = "";
+                prioritySelect.value = "None";
+            }
+            deadLineInput.checked = false;//uncheck the deadline checkbox
+            checkCheckboxStatus(deadLineInput, addDueDateInputOnPage, () => {
+                DOMManipulation.removeElements(document.getElementById("Due-date"), document.querySelector('label[for=Due-date]'));
+            });
+            DisplayingToDos.removeAllDisplayedContent();//remove and display again
+            DisplayingToDos.display(ToDos.toDoArray);
+        })
+    }
+
+    
     addButton.addEventListener('click', () => {
         console.log('addbutton clicked');
-
+        
         if (document.getElementById('input-container') === null) {//if form has not been created already
             console.log('there are no forms');
-
-            let inputContainer = document.createElement('div');
-            inputContainer.id = 'input-container';
-            formContainer.appendChild(inputContainer);
-            let submitButton = document.createElement('button');
-            submitButton.setAttribute('id', 'submit-button')
-
-            DOMManipulation.putElementOnPage(titleInput, 'Title', undefined, undefined, inputContainer);
-            DOMManipulation.putElementOnPage(descriptionInput, 'Description', undefined, undefined, inputContainer);
-
-            DOMManipulation.putElementOnPage(deadLineInput, 'Deadline', undefined, undefined, inputContainer);
-            deadLineInput.type = 'checkbox';
-
-            function addDueDateInputOnPage() {
-                console.log("add due date on page runs")
-                console.log("due date input is", dueDateInput)
-                DOMManipulation.putElementOnPage(dueDateInput, 'Due-date', document.querySelector('label[for=Checklist]'), undefined, inputContainer);
-            }
-
-            deadLineInput.addEventListener('click', () => {
-                checkCheckboxStatus(deadLineInput, addDueDateInputOnPage, () => {
-                    DOMManipulation.removeElements(document.getElementById("Due-date"), document.querySelector('label[for=Due-date]'));
-                });
-            });
-            let checkListInput = document.createElement('input');
-            checkListInput.type = 'checkbox';
-            DOMManipulation.putElementOnPage(checkListInput, 'Checklist', undefined, undefined, inputContainer);
-            checkListInput.addEventListener('click', () => {
-
-
-                checkCheckboxStatus(checkListInput, () => {
-                    let checklistContainer = document.createElement('div');
-                    DOMManipulation.putElementOnPage(checklistContainer, undefined, document.querySelector('label[for=Priority]'), undefined, inputContainer);
-                    checklistContainer.setAttribute('id', 'checklist-container');
-
-                    function createNextItem() {
-                        let checkListElementContainer = document.createElement('div');
-                        let elementNumber = checkListElementCounter;
-                        checkListElementContainer.setAttribute('id', elementNumber);
-                        checkListElementContainer.setAttribute('class', 'checklist-element-container');
-                        checkListElementCounter++;
-
-                        DOMManipulation.putElementOnPage(
-
-                            checkListElementContainer,
-                            undefined,
-                            undefined,
-                            undefined,
-                            checklistContainer);
-
-                        let checkListElement = document.createElement('input');
-                        checkListElement.setAttribute('class', 'checklist-element')
-
-                        DOMManipulation.putElementOnPage(checkListElement, undefined, undefined, undefined, checkListElementContainer);
-
-                        let addNextElementButton = document.createElement('button');
-                        DOMManipulation.putElementOnPage(addNextElementButton, undefined, undefined, "+", checkListElementContainer);
-                        addNextElementButton.setAttribute('class', 'add-next-element-button')
-
-                        addNextElementButton.addEventListener('click', () => {
-                            DOMManipulation.removeElements(document.getElementsByClassName('add-next-element-button')[0])
-
-                            createNextItem()
-                        })
-
-                        let removeSpecificElementButton = document.createElement('button');
-                        DOMManipulation.putElementOnPage(removeSpecificElementButton, undefined, undefined, "remove", checkListElementContainer);
-                        removeSpecificElementButton.setAttribute('class', 'remove-specific-element-button')
-
-                        removeSpecificElementButton.addEventListener('click', () => {
-                            DOMManipulation.removeElements(removeSpecificElementButton.parentElement)
-                        })
-                    }
-                    createNextItem();
-
-
-
-                },
-                    () => {
-                        document.getElementById('checklist-container').remove();
-                    }
-
-                );
-
-            })
-            DOMManipulation.putElementOnPage(prioritySelect, 'Priority', undefined, undefined, inputContainer);
-            function createSelectOption(text) {
-                let option = document.createElement('option');
-                prioritySelect.appendChild(option);
-                option.value = text;
-                option.innerText = text;
-            }
-            createSelectOption('None');
-            createSelectOption('Low');
-            createSelectOption('Medium');
-            createSelectOption('High');
-
-
-
-            formContainer.appendChild(submitButton);
-            submitButton.innerText = 'Submit'
-            document.getElementById('submit-button').addEventListener('click', () => {
-                let checkListValuesArray = Array.from(document.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
-                console.log("checklistvalues")
-                console.log(checkListValuesArray);
-                ToDos.createToDo(titleInput.value, descriptionInput.value, prioritySelect.value, dueDateInput.value, checkListValuesArray);
-
-
-                for (let i = 0; i < document.getElementsByTagName("input").length; i++) {//clear the form values
-                    document.getElementsByTagName("input")[i].value = "";
-                    prioritySelect.value = "None";
-                }
-                deadLineInput.checked = false;//uncheck the deadline checkbox
-                checkCheckboxStatus(deadLineInput, addDueDateInputOnPage, () => {
-                    DOMManipulation.removeElements(document.getElementById("Due-date"), document.querySelector('label[for=Due-date]'));
-                });
-                DisplayingToDos.removeAllDisplayedContent();//remove and display again
-                DisplayingToDos.display(ToDos.toDoArray);
-            })
+            createFormToDefineToDo(formContainer);
+            ///////////////////////
         }
     })
 
 
     return {
         checkCheckboxStatus,
+        createFormToDefineToDo,
     }
 
 })();
@@ -360,20 +367,34 @@ const DisplayingToDos = (function () {
                 noNoteState();
             }
 
-            DOMManipulation.putElementOnPage('p', undefined, undefined, `Status: ${arrayOfTodos[j].toDoStatus}`, toDoContainer)
+
+            DOMManipulation.putElementOnPage('p', undefined, undefined, `Status: ${arrayOfTodos[j].toDoStatus}`, toDoContainer);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////current thing to do
+            let editToDoButton = document.createElement('button');
+            DOMManipulation.putElementOnPage(editToDoButton, undefined, undefined, 'edit', toDoContainer);
+            editToDoButton.addEventListener('click', ()=>{
+                console.log('edit todo button clicked');
+                DOMManipulation.removeAllChildren(toDoContainer);
+
+
+            })
+
             let deleteToDoButton = document.createElement('button')
-            DOMManipulation.putElementOnPage(deleteToDoButton, undefined, undefined, 'delete', toDoContainer)
+            DOMManipulation.putElementOnPage(deleteToDoButton, undefined, undefined, 'delete', toDoContainer);
             deleteToDoButton.addEventListener('click', () => {
                 console.log('delete todo clicked')
                 arrayOfTodos.splice(j, 1);
                 toDoContainer.remove();
-                dealingWithLocalStorage.updateLocalStorage('toDoArray', arrayOfTodos);
+                //dealingWithLocalStorage.updateLocalStorage('toDoArray', arrayOfTodos); should not be necessary since clicking on the container
+                //already updates local storage
                 console.log('to do array after deleting element' + JSON.stringify(arrayOfTodos));
                 console.log('attention, this is local storage' + localStorage.getItem('toDoArray'));
             })
             console.log(arrayOfTodos[j])
             console.log(arrayOfTodos[j].checkList)
             console.log('notes' + arrayOfTodos[j].notes)
+
+
 
             toDoContainer.addEventListener('click', () => {
                 console.log('to do container clicked')
