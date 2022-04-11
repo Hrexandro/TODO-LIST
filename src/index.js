@@ -1,3 +1,6 @@
+//DO THIS NOW
+//LINE 99 -DEFAULT VALUES FOR EDITED TO DO
+
 import './style.css';
 
 
@@ -84,17 +87,24 @@ const form = (function () {
             ifUnchecked();
         }
     }
-    function createFormToDefineToDo(container){//also use for the edited form of a finished todo
+    function createFormToDefineToDo(container, editedToDo) {//the second argument is only used when the form is created to edit an existing todo
+
         let titleInput = document.createElement('input');
         let descriptionInput = document.createElement('input');
         let deadLineInput = document.createElement('input');
         let dueDateInput = document.createElement('input');
         dueDateInput.type = 'date';
         let prioritySelect = document.createElement('select');
-    
+
+        if (editedToDo) {//finish this now
+            console.log(editedToDo)
+            console.log(editedToDo.title)
+            titleInput.value = editedToDo.title
+            descriptionInput.value = editedToDo.description
+        }
         let checkListElementCounter = 0;
         let inputContainer = document.createElement('div');
-        inputContainer.id = 'input-container';
+        inputContainer.setAttribute('class', 'input-container');
         container.appendChild(inputContainer);
         let saveButton = document.createElement('button');
         saveButton.setAttribute('id', 'save-button')
@@ -193,7 +203,7 @@ const form = (function () {
 
         container.appendChild(saveButton);
         saveButton.innerText = 'save'
-        document.getElementById('save-button').addEventListener('click', () => {
+        saveButton.addEventListener('click', () => {
             let checkListValuesArray = Array.from(document.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
             console.log("checklistvalues")
             console.log(checkListValuesArray);
@@ -213,11 +223,11 @@ const form = (function () {
         })
     }
 
-    
+
     addButton.addEventListener('click', () => {
         console.log('addbutton clicked');
-        
-        if (document.getElementById('input-container') === null) {//if form has not been created already
+
+        if (document.getElementById('form-container').getElementsByClassName('input-container').length < 1) {//if form has not been created already
             console.log('there are no forms');
             createFormToDefineToDo(formContainer);
             ///////////////////////
@@ -254,6 +264,7 @@ const DisplayingToDos = (function () {
             console.log('the length of array of todos is ' + arrayOfTodos.length)
             let toDoContainer = document.createElement('div');
             toDoContainer.setAttribute('class', 'todo-container')
+            toDoContainer.setAttribute('id', `note ${j}`)
             contentDisplay.appendChild(toDoContainer);
             DOMManipulation.putElementOnPage('p', undefined, undefined, `Title: ${arrayOfTodos[j].title}`, toDoContainer);
             if (arrayOfTodos[j].description) {
@@ -340,7 +351,7 @@ const DisplayingToDos = (function () {
                 arrayOfTodos[j].notes = value;
                 displayedNote.innerText = value;
                 DOMManipulation.removeElements(notesInputArea, saveNotesButton);
-                DOMManipulation.putElementOnPage(editNoteButton, undefined, deleteNotesButton, 'Edit', noteContainer);
+                DOMManipulation.putElementOnPage(editNoteButton, undefined, deleteNotesButton, 'Edit note', noteContainer);
                 editNoteButton.addEventListener('click', () => {
                     console.log('edit note button clickerd');
                     noteEditState();
@@ -369,12 +380,13 @@ const DisplayingToDos = (function () {
 
 
             DOMManipulation.putElementOnPage('p', undefined, undefined, `Status: ${arrayOfTodos[j].toDoStatus}`, toDoContainer);
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////current thing to do
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////current thing to do
             let editToDoButton = document.createElement('button');
             DOMManipulation.putElementOnPage(editToDoButton, undefined, undefined, 'edit', toDoContainer);
-            editToDoButton.addEventListener('click', ()=>{
+            editToDoButton.addEventListener('click', () => {
                 console.log('edit todo button clicked');
                 DOMManipulation.removeAllChildren(toDoContainer);
+                form.createFormToDefineToDo(toDoContainer, arrayOfTodos[j]);
 
 
             })
