@@ -1,6 +1,31 @@
 //DO THIS NOW
 //LINE 99 -DEFAULT VALUES FOR EDITED TO DO
 
+// error when checking/unchecking deadline:
+// Uncaught TypeError: ifChecked is not a function
+//     at checkCheckboxStatus (index.js:84:1)
+//     at HTMLInputElement.<anonymous> (index.js:130:1)
+// checkCheckboxStatus @ index.js:84
+// (anonymous) @ index.js:130
+
+//problems when checking deadline while editing a todo
+
+//when starts as checked, the date input field is not visible
+
+//when unchecked the due date label does not disappear
+
+//the input field appears in the wrong place
+
+
+//Additionally:
+
+// add restrictions to form input to ensure aesthetic compatibility
+//style everything to look nice and neat and clean and super cool
+//make them draggable to switch places
+//sort them by different criteria
+//divide them into projects
+// limit which parts of toDoArray are exposed
+
 import './style.css';
 
 
@@ -99,8 +124,13 @@ const form = (function () {
         if (editedToDo) {//finish this now
             console.log(editedToDo)
             console.log(editedToDo.title)
-            titleInput.value = editedToDo.title
-            descriptionInput.value = editedToDo.description
+            titleInput.value = editedToDo.title;
+            descriptionInput.value = editedToDo.description;
+            if (editedToDo.dueDate){
+                deadLineInput.checked = true;
+                addDueDateInputOnPage(container, container.querySelector('label[for=Priority]'));//parent and insert before should be defined perhaps
+                dueDateInput.value = editedToDo.dueDate;
+            }
         }
         let checkListElementCounter = 0;
         let inputContainer = document.createElement('div');
@@ -115,14 +145,14 @@ const form = (function () {
         DOMManipulation.putElementOnPage(deadLineInput, 'Deadline', undefined, undefined, inputContainer);
         deadLineInput.type = 'checkbox';
 
-        function addDueDateInputOnPage() {
+        function addDueDateInputOnPage(parent, insertBefore) {
             console.log("add due date on page runs")
             console.log("due date input is", dueDateInput)
-            DOMManipulation.putElementOnPage(dueDateInput, 'Due-date', document.querySelector('label[for=Checklist]'), undefined, inputContainer);
+            DOMManipulation.putElementOnPage(dueDateInput, 'Due-date', insertBefore, undefined, parent);
         }
 
         deadLineInput.addEventListener('click', () => {
-            checkCheckboxStatus(deadLineInput, addDueDateInputOnPage, () => {
+            checkCheckboxStatus(deadLineInput, addDueDateInputOnPage(inputContainer, document.getElementById('form-container').querySelector('label[for=Priority]')), () => {
                 DOMManipulation.removeElements(document.getElementById("Due-date"), document.querySelector('label[for=Due-date]'));
             });
         });
@@ -409,10 +439,10 @@ const DisplayingToDos = (function () {
 
 
             toDoContainer.addEventListener('click', () => {
-                console.log('to do container clicked')
+                //console.log('to do container clicked')
                 dealingWithLocalStorage.updateLocalStorage('toDoArray', arrayOfTodos);
-                console.log('to do array after clicking' + JSON.stringify(arrayOfTodos));
-                console.log('attention, this is local storage' + localStorage.getItem('toDoArray'));
+                //console.log('to do array after clicking' + JSON.stringify(arrayOfTodos));
+                //console.log('attention, this is local storage' + localStorage.getItem('toDoArray'));
             })
         }
     }
