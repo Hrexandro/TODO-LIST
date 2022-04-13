@@ -1,20 +1,8 @@
 //DO THIS NOW
 //LINE 99 -DEFAULT VALUES FOR EDITED TO DO
 
-// error when checking/unchecking deadline:
-// Uncaught TypeError: ifChecked is not a function
-//     at checkCheckboxStatus (index.js:84:1)
-//     at HTMLInputElement.<anonymous> (index.js:130:1)
-// checkCheckboxStatus @ index.js:84
-// (anonymous) @ index.js:130
-
-//problems when checking deadline while editing a todo
-
-//when starts as checked, the date input field is not visible
-
-//when unchecked the due date label does not disappear
-
-//the input field appears in the wrong place
+//finish rest of default values when editing:
+//the checklist is a big one
 
 
 //Additionally:
@@ -55,7 +43,7 @@ const DOMManipulation = (function () {
             let elementLabel = document.createElement('label');
             elementLabel.setAttribute('for', description);
             elementLabel.innerText = `${description}`;
-            element.setAttribute('id', description)
+            element.setAttribute('class', description)
             if (insertBeforeWhat) {
                 parent.insertBefore(elementLabel, insertBeforeWhat);
             }
@@ -106,10 +94,10 @@ const form = (function () {
 
     function checkCheckboxStatus(checkBoxElement, ifChecked, ifUnchecked) {//make sure the parameters are functions
         if (checkBoxElement.checked) {
-            ifChecked();
+            return ifChecked();
         }
         else {
-            ifUnchecked();
+            return ifUnchecked();
         }
     }
     function createFormToDefineToDo(container, editedToDo) {//the second argument is only used when the form is created to edit an existing todo
@@ -121,17 +109,7 @@ const form = (function () {
         dueDateInput.type = 'date';
         let prioritySelect = document.createElement('select');
 
-        if (editedToDo) {//finish this now
-            console.log(editedToDo)
-            console.log(editedToDo.title)
-            titleInput.value = editedToDo.title;
-            descriptionInput.value = editedToDo.description;
-            if (editedToDo.dueDate){
-                deadLineInput.checked = true;
-                addDueDateInputOnPage(container, container.querySelector('label[for=Priority]'));//parent and insert before should be defined perhaps
-                dueDateInput.value = editedToDo.dueDate;
-            }
-        }
+
         let checkListElementCounter = 0;
         let inputContainer = document.createElement('div');
         inputContainer.setAttribute('class', 'input-container');
@@ -151,11 +129,24 @@ const form = (function () {
             DOMManipulation.putElementOnPage(dueDateInput, 'Due-date', insertBefore, undefined, parent);
         }
 
+        function checkDeadline() {//for the sake of reusability in the form and when editing
+            console.log(deadLineInput.checked);
+            checkCheckboxStatus(deadLineInput, ()=>{
+                addDueDateInputOnPage(inputContainer, inputContainer.querySelector('label[for=Checklist]'))
+            },
+            ()=>{
+                DOMManipulation.removeElements(inputContainer.querySelector('input[type="date"]'), inputContainer.querySelector('label[for=Due-date]'))
+            }
+            );
+
+        }
+
         deadLineInput.addEventListener('click', () => {
-            checkCheckboxStatus(deadLineInput, addDueDateInputOnPage(inputContainer, document.getElementById('form-container').querySelector('label[for=Priority]')), () => {
-                DOMManipulation.removeElements(document.getElementById("Due-date"), document.querySelector('label[for=Due-date]'));
-            });
+            checkDeadline();
         });
+
+
+
         let checkListInput = document.createElement('input');
         checkListInput.type = 'checkbox';
         DOMManipulation.putElementOnPage(checkListInput, 'Checklist', undefined, undefined, inputContainer);
@@ -235,22 +226,37 @@ const form = (function () {
         saveButton.innerText = 'save'
         saveButton.addEventListener('click', () => {
             let checkListValuesArray = Array.from(document.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
-            console.log("checklistvalues")
+            console.log('checklistvalues')
             console.log(checkListValuesArray);
             ToDos.createToDo(titleInput.value, descriptionInput.value, prioritySelect.value, dueDateInput.value, checkListValuesArray);
 
 
-            for (let i = 0; i < document.getElementsByTagName("input").length; i++) {//clear the form values
-                document.getElementsByTagName("input")[i].value = "";
-                prioritySelect.value = "None";
+            for (let i = 0; i < document.getElementsByTagName('input').length; i++) {//clear the form values
+                document.getElementsByTagName('input')[i].value = '';
+                prioritySelect.value = 'None';
             }
             deadLineInput.checked = false;//uncheck the deadline checkbox
             checkCheckboxStatus(deadLineInput, addDueDateInputOnPage, () => {
-                DOMManipulation.removeElements(document.getElementById("Due-date"), document.querySelector('label[for=Due-date]'));
+                DOMManipulation.removeElements(document.getElementById('form-container').querySelector('input[type="date"]'),
+                    document.getElementById('form-container').querySelector('label[for=Due-date]'));
             });
             DisplayingToDos.removeAllDisplayedContent();//remove and display again
             DisplayingToDos.display(ToDos.toDoArray);
         })
+
+        //finish this now
+        if (editedToDo) {//if the user is editing todo, display the current values
+            console.log(editedToDo)
+            console.log(editedToDo.title)
+            titleInput.value = editedToDo.title;
+            descriptionInput.value = editedToDo.description;
+            if (editedToDo.dueDate) {
+                deadLineInput.checked = true;
+                checkDeadline()
+                //addDueDateInputOnPage(container, container.querySelector('label[for=Priority]'));//parent and insert before should be defined perhaps
+                dueDateInput.value = editedToDo.dueDate;
+            }
+        }
     }
 
 
