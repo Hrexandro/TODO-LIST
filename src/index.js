@@ -2,7 +2,19 @@
 //LINE 99 -DEFAULT VALUES FOR EDITED TO DO
 
 //finish rest of default values when editing:
-//the checklist is a big one
+//current thing: saveButton.addEventListener - make it work properly both when creating a new and editing an existing todo, now it is a mess
+
+
+//the checklist: when editing, have the proper numbers and default values for the checklist appear
+
+//line~204 if you uncheck the checklist checkbox and then save
+//the checklist should be deleted
+//(remember for it target a particular ToDo [no globals])
+
+//BUG: if one is in an edited state and others get deleted
+// and then  you save the changes, the deleted todos reappear
+
+//checklist elements have numbered ids, but those can repeat so change it
 
 
 //Additionally:
@@ -115,7 +127,7 @@ const form = (function () {
         inputContainer.setAttribute('class', 'input-container');
         container.appendChild(inputContainer);
         let saveButton = document.createElement('button');
-        saveButton.setAttribute('id', 'save-button')
+        saveButton.setAttribute('class', 'save-button')//changed to class from id, see if it causes issues
 
         DOMManipulation.putElementOnPage(titleInput, 'Title', undefined, undefined, inputContainer);
         DOMManipulation.putElementOnPage(descriptionInput, 'Description', undefined, undefined, inputContainer);
@@ -150,14 +162,20 @@ const form = (function () {
         let checkListInput = document.createElement('input');
         checkListInput.type = 'checkbox';
         DOMManipulation.putElementOnPage(checkListInput, 'Checklist', undefined, undefined, inputContainer);
-        checkListInput.addEventListener('click', () => {
 
-
-            checkCheckboxStatus(checkListInput, () => {
+        function controlCheckList(checkListCheckBox) {
+            checkCheckboxStatus(checkListCheckBox, () => {
                 let checklistContainer = document.createElement('div');
-                DOMManipulation.putElementOnPage(checklistContainer, undefined, document.querySelector('label[for=Priority]'), undefined, inputContainer);
+                DOMManipulation.putElementOnPage(checklistContainer, undefined, inputContainer.querySelector('label[for=Priority]'), undefined, inputContainer);
                 checklistContainer.setAttribute('id', 'checklist-container');
 
+                ////////////////////////////
+                let itemCounter = 0;
+                if (editedToDo) {
+                    console.log('!!!!' + JSON.stringify(editedToDo.checkList));
+                    console.log('!!!!' + JSON.stringify(editedToDo.checkList.length));
+                }
+                ////////////////////////////
                 function createNextItem() {
                     let checkListElementContainer = document.createElement('div');
                     let elementNumber = checkListElementCounter;
@@ -176,6 +194,7 @@ const form = (function () {
                     let checkListElement = document.createElement('input');
                     checkListElement.setAttribute('class', 'checklist-element')
 
+
                     DOMManipulation.putElementOnPage(checkListElement, undefined, undefined, undefined, checkListElementContainer);
 
                     let addNextElementButton = document.createElement('button');
@@ -185,8 +204,18 @@ const form = (function () {
                     addNextElementButton.addEventListener('click', () => {
                         DOMManipulation.removeElements(document.getElementsByClassName('add-next-element-button')[0])
 
-                        createNextItem()
+                        createNextItem();
                     })
+
+                    ////////////////////////////editing a ToDo
+                    if (editedToDo) {
+                        checkListElement.value = editedToDo.checkList[itemCounter].value;
+                        itemCounter++;
+                        if (itemCounter < editedToDo.checkList.length) {
+                            createNextItem();
+                        }
+                    }
+                    ////////////////////////////
 
                     let removeSpecificElementButton = document.createElement('button');
                     DOMManipulation.putElementOnPage(removeSpecificElementButton, undefined, undefined, "remove", checkListElementContainer);
@@ -206,7 +235,10 @@ const form = (function () {
                 }
 
             );
+        }
 
+        checkListInput.addEventListener('click', () => {
+            controlCheckList(checkListInput);
         })
         DOMManipulation.putElementOnPage(prioritySelect, 'Priority', undefined, undefined, inputContainer);
         function createSelectOption(text) {
@@ -224,8 +256,17 @@ const form = (function () {
 
         container.appendChild(saveButton);
         saveButton.innerText = 'save'
-        saveButton.addEventListener('click', () => {
-            let checkListValuesArray = Array.from(document.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
+        saveButton.addEventListener('click', () => {//do this now, it is totally unsuited for editing to tods
+            console.log('savebuttonclicked')
+            let checkListValuesArray = [];
+            if (editedToDo) {
+                checkListValuesArray = Array.from(document.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
+            }
+            else {
+                checkListValuesArray = Array.from(document.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
+            }
+
+            //let checkListValuesArray = Array.from(document.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
             console.log('checklistvalues')
             console.log(checkListValuesArray);
             ToDos.createToDo(titleInput.value, descriptionInput.value, prioritySelect.value, dueDateInput.value, checkListValuesArray);
@@ -253,22 +294,23 @@ const form = (function () {
             if (editedToDo.dueDate) {
                 deadLineInput.checked = true;
                 checkDeadline()
-                //addDueDateInputOnPage(container, container.querySelector('label[for=Priority]'));//parent and insert before should be defined perhaps
                 dueDateInput.value = editedToDo.dueDate;
             }
+            if (editedToDo.checkList.length > 0) {
+                console.log('there is a checklist')
+                console.log(checkListInput)
+                checkListInput.checked = true;
+                controlCheckList(checkListInput);//make this function also check each checklist element and insert the current value into the appropriate
+                //number of fields
 
-            if (editedToDo.notes) {
-                //do something with note states
             }
         }
     }
 
-
-    //////////////////////notes V
-    function determineNoteState(particularToDo, container){
+    function determineNoteState(particularToDo, containingElement) {
         let noteContainer = document.createElement('div');
         noteContainer.setAttribute('class', 'note-container');
-        DOMManipulation.putElementOnPage(noteContainer, undefined, undefined, undefined, container);
+        DOMManipulation.putElementOnPage(noteContainer, undefined, undefined, undefined, containingElement);
 
         let addNotesButton = document.createElement('button');
 
@@ -281,7 +323,7 @@ const form = (function () {
         function noteEditState() {//remove add button, add input field (with the value set, if available), save and remove buttons
             console.log('note edit state runs')
             if (addNotesButton) {
-                addNotesButton.remove()
+                addNotesButton.remove();
             }
             if (editNoteButton) {
                 editNoteButton.remove();
@@ -385,7 +427,7 @@ const DisplayingToDos = (function () {
             console.log('the length of array of todos is ' + arrayOfTodos.length)
             let toDoContainer = document.createElement('div');
             toDoContainer.setAttribute('class', 'todo-container')
-            toDoContainer.setAttribute('id', `note ${j}`)
+            toDoContainer.setAttribute('id', `ToDo number ${j}`)
             contentDisplay.appendChild(toDoContainer);
             DOMManipulation.putElementOnPage('p', undefined, undefined, `Title: ${arrayOfTodos[j].title}`, toDoContainer);
             if (arrayOfTodos[j].description) {
