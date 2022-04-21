@@ -39,6 +39,11 @@ document.getElementById('checklocalstorage-button').addEventListener('click', ()
 document.getElementById('check todos array-button').addEventListener('click', () => {
     console.log(JSON.stringify(ToDos.toDoArray))
 })
+document.getElementById('clear local storage-button').addEventListener('click', () => {
+    localStorage.clear()
+})
+
+
 ////////////////
 
 const DOMManipulation = (function () {
@@ -259,30 +264,35 @@ const form = (function () {
         saveButton.addEventListener('click', () => {//do this now, it is totally unsuited for editing to tods
             console.log('savebuttonclicked')
             let checkListValuesArray = [];
-            if (editedToDo) {
-                checkListValuesArray = Array.from(document.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
+            if (inputContainer.getElementsByClassName('checklist-element').length > 0) {
+                checkListValuesArray = Array.from(inputContainer.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
             }
-            else {
-                checkListValuesArray = Array.from(document.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
+            if (editedToDo) {//if editing
+                console.log('!!!! saving with editing todo')
+                ToDos.redefineToDo(editedToDo, titleInput.value, descriptionInput.value, dueDateInput.value, prioritySelect.value, checkListValuesArray);
+
             }
+            else {//if filling form for a new to do
+                //let checkListValuesArray = Array.from(document.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
+                console.log('checklistvalues')
+                console.log(checkListValuesArray);
+                ToDos.createToDo(titleInput.value, descriptionInput.value, dueDateInput.value, prioritySelect.value, checkListValuesArray);
 
-            //let checkListValuesArray = Array.from(document.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
-            console.log('checklistvalues')
-            console.log(checkListValuesArray);
-            ToDos.createToDo(titleInput.value, descriptionInput.value, prioritySelect.value, dueDateInput.value, checkListValuesArray);
 
+                for (let i = 0; i < document.getElementsByTagName('input').length; i++) {//clear the form values
+                    inputContainer.getElementsByTagName('input')[i].value = '';
+                    prioritySelect.value = 'None';
+                }
+                deadLineInput.checked = false;//uncheck the deadline checkbox
+                checkCheckboxStatus(deadLineInput, addDueDateInputOnPage, () => {
+                    DOMManipulation.removeElements(document.getElementById('form-container').querySelector('input[type="date"]'),
+                        document.getElementById('form-container').querySelector('label[for=Due-date]'));
+                });
 
-            for (let i = 0; i < document.getElementsByTagName('input').length; i++) {//clear the form values
-                document.getElementsByTagName('input')[i].value = '';
-                prioritySelect.value = 'None';
             }
-            deadLineInput.checked = false;//uncheck the deadline checkbox
-            checkCheckboxStatus(deadLineInput, addDueDateInputOnPage, () => {
-                DOMManipulation.removeElements(document.getElementById('form-container').querySelector('input[type="date"]'),
-                    document.getElementById('form-container').querySelector('label[for=Due-date]'));
-            });
             DisplayingToDos.removeAllDisplayedContent();//remove and display again
             DisplayingToDos.display(ToDos.toDoArray);
+
         })
 
         //finish this now
@@ -525,7 +535,7 @@ const ToDos = (function () {
     }
 
     class toDo {
-        constructor(title, description, priority, dueDate, checkList) {
+        constructor(title, description, dueDate, priority, checkList) {
             this.title = title;
             this.description = description;
             this.priority = priority;
@@ -549,8 +559,22 @@ const ToDos = (function () {
         console.log('attention, this is local storage' + localStorage.getItem('toDoArray'));
     }
 
+    function redefineToDo(ToDo, title, description, dueDate, priority, checkList) {
+        console.log('before redefining ' + JSON.stringify(ToDo))
+        ToDo.title = title;
+        ToDo.description = description;
+        ToDo.dueDate = dueDate;
+        ToDo.priority = priority;
+        ToDo.checkList = checkList;
+        console.log('after redefining ' + JSON.stringify(ToDo))
+    }
+
+    //ToDos.createToDo(titleInput.value, descriptionInput.value, prioritySelect.value, dueDateInput.value, checkListValuesArray);
+    // function redefineToDo(ToDo, title, description, dueDate, priority, checkList
+
     return {
         createToDo,
+        redefineToDo,
         toDoArray,//restrict it later, to expose only a get of the arrat or perhaps particular properties to be changed, e.g. checklist status or priority
     }
 })();
