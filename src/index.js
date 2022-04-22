@@ -176,10 +176,10 @@ const form = (function () {
 
                 ////////////////////////////
                 let itemCounter = 0;
-                if (editedToDo) {
-                    console.log('!!!!' + JSON.stringify(editedToDo.checkList));
-                    console.log('!!!!' + JSON.stringify(editedToDo.checkList.length));
-                }
+                // if (editedToDo) {
+                //     console.log('' + JSON.stringify(editedToDo.checkList));
+                //     console.log('' + JSON.stringify(editedToDo.checkList.length));
+                // }
                 ////////////////////////////
                 function createNextItem() {
                     let checkListElementContainer = document.createElement('div');
@@ -213,7 +213,10 @@ const form = (function () {
                     })
 
                     ////////////////////////////editing a ToDo
-                    if (editedToDo) {
+                    console.log('!!!!'+editedToDo)
+                    if (editedToDo && editedToDo.checkList[itemCounter]) {
+                        console.log('!!!!'+editedToDo.checkList[itemCounter]);
+                        console.log('!!!!'+JSON.stringify(editedToDo.checkList[itemCounter]));
                         checkListElement.value = editedToDo.checkList[itemCounter].value;
                         itemCounter++;
                         if (itemCounter < editedToDo.checkList.length) {
@@ -261,14 +264,15 @@ const form = (function () {
 
         container.appendChild(saveButton);
         saveButton.innerText = 'save'
-        saveButton.addEventListener('click', () => {//do this now, it is totally unsuited for editing to tods
+        saveButton.addEventListener('click', () => {//test this some more
             console.log('savebuttonclicked')
             let checkListValuesArray = [];
             if (inputContainer.getElementsByClassName('checklist-element').length > 0) {
                 checkListValuesArray = Array.from(inputContainer.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
             }
             if (editedToDo) {//if editing
-                console.log('!!!! saving with editing todo')
+                checkListValuesArray = editedToDo.checkList;
+                console.log('save&edit')
                 ToDos.redefineToDo(editedToDo, titleInput.value, descriptionInput.value, dueDateInput.value, prioritySelect.value, checkListValuesArray);
 
             }
@@ -354,7 +358,7 @@ const form = (function () {
                 console.log(particularToDo.notes)
                 noNoteState();
                 console.log('no note state')
-                console.log('todos.note!!!!!!!!!!!!!!!!!!' + particularToDo.notes)
+
                 console.log('notesinputareea.value' + notesInputArea.value)
             })
 
@@ -568,10 +572,6 @@ const ToDos = (function () {
         ToDo.checkList = checkList;
         console.log('after redefining ' + JSON.stringify(ToDo))
     }
-
-    //ToDos.createToDo(titleInput.value, descriptionInput.value, prioritySelect.value, dueDateInput.value, checkListValuesArray);
-    // function redefineToDo(ToDo, title, description, dueDate, priority, checkList
-
     return {
         createToDo,
         redefineToDo,
