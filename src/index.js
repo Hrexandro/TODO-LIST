@@ -147,7 +147,6 @@ const form = (function () {
         }
 
         function checkDeadline() {//for the sake of reusability in the form and when editing
-            console.log(deadLineInput.checked);
             checkCheckboxStatus(deadLineInput, () => {
                 addDueDateInputOnPage(inputContainer, inputContainer.querySelector('label[for=Checklist]'))
             },
@@ -174,13 +173,7 @@ const form = (function () {
                 DOMManipulation.putElementOnPage(checklistContainer, undefined, inputContainer.querySelector('label[for=Priority]'), undefined, inputContainer);
                 checklistContainer.setAttribute('id', 'checklist-container');
 
-                ////////////////////////////
                 let itemCounter = 0;
-                // if (editedToDo) {
-                //     console.log('' + JSON.stringify(editedToDo.checkList));
-                //     console.log('' + JSON.stringify(editedToDo.checkList.length));
-                // }
-                ////////////////////////////
                 function createNextItem() {
                     let checkListElementContainer = document.createElement('div');
                     let elementNumber = checkListElementCounter;
@@ -212,18 +205,13 @@ const form = (function () {
                         createNextItem();
                     })
 
-                    ////////////////////////////editing a ToDo
-                    console.log('!!!!'+editedToDo)
                     if (editedToDo && editedToDo.checkList[itemCounter]) {
-                        console.log('!!!!'+editedToDo.checkList[itemCounter]);
-                        console.log('!!!!'+JSON.stringify(editedToDo.checkList[itemCounter]));
                         checkListElement.value = editedToDo.checkList[itemCounter].value;
                         itemCounter++;
                         if (itemCounter < editedToDo.checkList.length) {
                             createNextItem();
                         }
                     }
-                    ////////////////////////////
 
                     let removeSpecificElementButton = document.createElement('button');
                     DOMManipulation.putElementOnPage(removeSpecificElementButton, undefined, undefined, "remove", checkListElementContainer);
@@ -277,12 +265,9 @@ const form = (function () {
 
             }
             else {//if filling form for a new to do
-                //let checkListValuesArray = Array.from(document.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
                 console.log('checklistvalues')
                 console.log(checkListValuesArray);
                 ToDos.createToDo(titleInput.value, descriptionInput.value, dueDateInput.value, prioritySelect.value, checkListValuesArray);
-
-
                 for (let i = 0; i < document.getElementsByTagName('input').length; i++) {//clear the form values
                     inputContainer.getElementsByTagName('input')[i].value = '';
                     prioritySelect.value = 'None';
@@ -314,9 +299,7 @@ const form = (function () {
                 console.log('there is a checklist')
                 console.log(checkListInput)
                 checkListInput.checked = true;
-                controlCheckList(checkListInput);//make this function also check each checklist element and insert the current value into the appropriate
-                //number of fields
-
+                controlCheckList(checkListInput);
             }
         }
     }
@@ -354,28 +337,20 @@ const form = (function () {
             })
             DOMManipulation.putElementOnPage(deleteNotesButton, undefined, undefined, 'x', noteContainer);
             deleteNotesButton.addEventListener('click', () => {
-                console.log('delete notes button clicked')
-                console.log(particularToDo.notes)
                 noNoteState();
-                console.log('no note state')
-
-                console.log('notesinputareea.value' + notesInputArea.value)
             })
 
         }
         function displayNoteState(value) {//display the note, remove input area, remove save button, add edit button
-            console.log('display note state')
             particularToDo.notes = value;
             displayedNote.innerText = value;
             DOMManipulation.removeElements(notesInputArea, saveNotesButton);
             DOMManipulation.putElementOnPage(editNoteButton, undefined, deleteNotesButton, 'Edit note', noteContainer);
             editNoteButton.addEventListener('click', () => {
-                console.log('edit note button clickerd');
                 noteEditState();
             })
         }
         function noNoteState() {//remove everything from the noteContainer, except the Add note button
-            console.log('no note state')
             DOMManipulation.removeAllChildren(noteContainer);
             notesInputArea.value = ""
             particularToDo.notes = undefined;
@@ -383,9 +358,7 @@ const form = (function () {
             DOMManipulation.putElementOnPage(addNotesButton, undefined, undefined, 'Add notes', noteContainer);
         }
         addNotesButton.addEventListener('click', () => {
-            console.log(displayedNote)
             noteEditState();
-            console.log('add notes button clicked');
         })
 
 
@@ -398,15 +371,12 @@ const form = (function () {
         }
     }
 
-
-    //////////////////////notes ^
     addButton.addEventListener('click', () => {
         console.log('addbutton clicked');
 
         if (document.getElementById('form-container').getElementsByClassName('input-container').length < 1) {//if form has not been created already
             console.log('there are no forms');
             createFormToDefineToDo(formContainer);
-            ///////////////////////
         }
     })
 
@@ -486,7 +456,6 @@ const DisplayingToDos = (function () {
 
 
             DOMManipulation.putElementOnPage('p', undefined, undefined, `Status: ${arrayOfTodos[j].toDoStatus}`, toDoContainer);
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////current thing to do
             let editToDoButton = document.createElement('button');
             DOMManipulation.putElementOnPage(editToDoButton, undefined, undefined, 'edit', toDoContainer);
             editToDoButton.addEventListener('click', () => {
@@ -503,8 +472,6 @@ const DisplayingToDos = (function () {
                 console.log('delete todo clicked')
                 arrayOfTodos.splice(j, 1);
                 toDoContainer.remove();
-                //dealingWithLocalStorage.updateLocalStorage('toDoArray', arrayOfTodos); should not be necessary since clicking on the container
-                //already updates local storage
                 console.log('to do array after deleting element' + JSON.stringify(arrayOfTodos));
                 console.log('attention, this is local storage' + localStorage.getItem('toDoArray'));
             })
@@ -515,10 +482,7 @@ const DisplayingToDos = (function () {
             form.determineNoteState(arrayOfTodos[j], toDoContainer);
 
             toDoContainer.addEventListener('click', () => {
-                //console.log('to do container clicked')
                 dealingWithLocalStorage.updateLocalStorage('toDoArray', arrayOfTodos);
-                //console.log('to do array after clicking' + JSON.stringify(arrayOfTodos));
-                //console.log('attention, this is local storage' + localStorage.getItem('toDoArray'));
             })
         }
     }
@@ -531,7 +495,7 @@ const DisplayingToDos = (function () {
 
 const ToDos = (function () {
     console.log('create todo runs');
-    let toDoArray = [];//if there is something in localStorage these get changed
+    let toDoArray = [];//the array is cleared then fetched from LS
     let ordinal = 0;
     if (localStorage.getItem('toDoArray')) {
         toDoArray = JSON.parse(localStorage.getItem('toDoArray'));
@@ -556,21 +520,17 @@ const ToDos = (function () {
     }
 
     function createToDo(title, description, dueDate, priority, checkList) {
-        console.log('TODO creation start');
         let newToDo = new toDo(title, description, dueDate, priority, checkList);
         ToDos.toDoArray.push(newToDo);
         dealingWithLocalStorage.updateLocalStorage('toDoArray', ToDos.toDoArray);
-        console.log('attention, this is local storage' + localStorage.getItem('toDoArray'));
     }
 
     function redefineToDo(ToDo, title, description, dueDate, priority, checkList) {
-        console.log('before redefining ' + JSON.stringify(ToDo))
         ToDo.title = title;
         ToDo.description = description;
         ToDo.dueDate = dueDate;
         ToDo.priority = priority;
         ToDo.checkList = checkList;
-        console.log('after redefining ' + JSON.stringify(ToDo))
     }
     return {
         createToDo,
@@ -580,18 +540,14 @@ const ToDos = (function () {
 })();
 
 const dealingWithLocalStorage = (function () {
-
     function updateLocalStorage(keyName, value) {
         localStorage.setItem(keyName, JSON.stringify(value))
     }
-
     return {
         updateLocalStorage,
     }
 })();
-console.log('attention, this is local storage' + localStorage.getItem('toDoArray'));
 if (localStorage.getItem('toDoArray')) {//if something has been set in the local storage, then retrieve on startup
     ToDos.toDoArray = JSON.parse(localStorage.getItem('toDoArray'))
-    console.log(JSON.stringify(ToDos.toDoArray))
     DisplayingToDos.display(JSON.parse(localStorage.getItem('toDoArray')))
 }
