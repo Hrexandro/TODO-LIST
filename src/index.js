@@ -9,6 +9,10 @@
 
 //Solution: add checkboxes to the edited checklist elements as well, so they can be edited and the correct status fetched from the page
 
+//Status: checkboxes appear, localstorage is not updated when saving the edited changes
+//HOWEVER if localstorage is updated though clicking anywhere in the updated todo - it works
+//Next step: make sure the saving of the edited todo is coded correctly
+
 
 
 //BUGS:
@@ -19,6 +23,7 @@
 //status: check if this still applies
 
 //Next steps:
+//0) Replace checkCheckboxStatus with the ternary operator 'element.checked ? ifTrue: ifFalse'
 //1) Add restrictions to form input to ensure aesthetic compatibility
 //2) Style everything to look nice and neat and clean and super cool
 //3) make them draggable to switch places
@@ -147,6 +152,10 @@ const form = (function () {
         }
 
         function checkDeadline() {//for the sake of reusability in the form and when editing
+
+            //this should be correct, uncomment it when saving the todo is fixed
+            //deadLineInput.checked ? addDueDateInputOnPage(inputContainer, inputContainer.querySelector('label[for=Checklist]')) : DOMManipulation.removeElements(inputContainer.querySelector('input[type="date"]'), inputContainer.querySelector('label[for=Due-date]'))
+
             checkCheckboxStatus(deadLineInput, () => {
                 addDueDateInputOnPage(inputContainer, inputContainer.querySelector('label[for=Checklist]'))
             },
@@ -206,6 +215,8 @@ const form = (function () {
                     })
 
                     if (editedToDo && editedToDo.checkList[itemCounter]) {
+                        //addCheckListElementCheckBox(DOMelement, ToDoObject, checkListElementOrdinal, particularSetOfTodos)
+                        form.addCheckListElementCheckBox(checklistContainer, editedToDo, itemCounter, ToDos.toDoArray)
                         checkListElement.value = editedToDo.checkList[itemCounter].value;
                         itemCounter++;
                         if (itemCounter < editedToDo.checkList.length) {
@@ -253,6 +264,9 @@ const form = (function () {
         container.appendChild(saveButton);
         saveButton.innerText = 'save'
         saveButton.addEventListener('click', () => {//test this some more
+
+
+
             console.log('!!!savebuttonclicked')
             let checkListValuesArray = [];
             console.log(`!!!  ${inputContainer.getElementsByClassName('checklist-element').length > 0}`)
@@ -291,7 +305,7 @@ const form = (function () {
             }
             DisplayingToDos.removeAllDisplayedContent();//remove and display again
             DisplayingToDos.display(ToDos.toDoArray);
-
+            dealingWithLocalStorage.updateLocalStorage('toDoArray', ToDos.getArrayOfTodos());
         })
 
         //finish this now
@@ -402,6 +416,11 @@ const form = (function () {
         statusChecker.addEventListener('click', (e) => {
             form.checkCheckboxStatus(statusChecker,
                 () => {
+                    console.log('!!!'+ JSON.stringify(particularSetOfTodos))
+                    console.log(e.target.id)
+                    console.log('!!!'+ JSON.stringify(particularSetOfTodos[e.target.id[0]]))
+                    //console.log('!!!'+ particularSetOfTodos[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done)
+                    //console.log('!!!'+ particularSetOfTodos[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]])
                     particularSetOfTodos[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done = true;//change this to the ToDoObject or not?
                     console.log(e.target.id + "checked")
                 },
@@ -553,7 +572,7 @@ const DisplayingToDos = (function () {
             toDoContainer.addEventListener('click', () => {
                 console.log('todo container clicked, localstorage updated')
                 dealingWithLocalStorage.updateLocalStorage('toDoArray', arrayOfTodos);
-                console.log('todoarray is'+JSON.stringify(arrayOfTodos))
+                console.log('todoarray is' + JSON.stringify(arrayOfTodos))
                 console.log('localstorage after updating:')
                 console.log(JSON.stringify(localStorage.getItem('toDoArray')))
             })
@@ -574,7 +593,7 @@ const ToDos = (function () {
         toDoArray = JSON.parse(localStorage.getItem('toDoArray'));
         ordinal = toDoArray.length;
     }
-//ToDos.toDoArray
+    //ToDos.toDoArray
     class toDo {
         constructor(title, description, dueDate, priority, checkList) {
             this.title = title;
@@ -605,16 +624,26 @@ const ToDos = (function () {
         ToDo.priority = priority;
         ToDo.checkList = checkList;
     }
+
+    function getArrayOfTodos(){//use this later
+        return toDoArray
+    }
+
     return {
         createToDo,
         redefineToDo,
+        getArrayOfTodos,
         toDoArray,//restrict it later, to expose only a get of the arrat or perhaps particular properties to be changed, e.g. checklist status or priority
     }
 })();
 
 const dealingWithLocalStorage = (function () {
     function updateLocalStorage(keyName, value) {
+        console.log('updating local storage with');
+        console.log(JSON.stringify(value));
+        console.log(`storage before updating ${JSON.parse(localStorage.getItem(value))}`)
         localStorage.setItem(keyName, JSON.stringify(value))
+        console.log(`storage after updating ${JSON.parse(localStorage.getItem(value))}`)
     }
     return {
         updateLocalStorage,
