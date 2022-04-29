@@ -265,40 +265,36 @@ const form = (function () {
 
         container.appendChild(saveButton);
         saveButton.innerText = 'save'
-        saveButton.addEventListener('click', () => {//test this some more
-            console.log('!!!savebuttonclicked')
+        saveButton.addEventListener('click', () => {
+
             let checkListValuesArray = [];
-            console.log(`!!!  ${inputContainer.getElementsByClassName('checklist-element').length > 0}`)
-            ////////////////////////////////////////////////////////////
-            if (inputContainer.getElementsByClassName('checklist-element').length > 0) {//if there are displayed checklist points, use them
-                //HOW TO PROCEED:
-                //add checkboxes in the edited todo state as well, so that the data can be fetchedfrom the page entirely
-                //
-                console.log('@@@'+JSON.stringify(Array.from(inputContainer.getElementsByClassName('checklist-element'))));
 
+            if (editedToDo && inputContainer.getElementsByClassName('checklist-element').length > 0) {//if there are displayed checklist points, use them
 
+                for (let m = 0; m < inputContainer.getElementsByClassName('checklist-element').length; m++) {
+                    let currentContainer = inputContainer.getElementsByClassName('checklist-element-container')[m];
+                    let elementValue = currentContainer.getElementsByClassName('checklist-element')[0].value;
+                    let elementDone = currentContainer.querySelector('input[type="checkbox"]').checked
+                    checkListValuesArray.push({ value: elementValue, done: elementDone })
+
+                }
+            }
+            else if (inputContainer.getElementsByClassName('checklist-element').length > 0) {
                 checkListValuesArray = Array.from(inputContainer.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
             }
-            else {//if there are none (the field is unchecked), clear the array
-                editedToDo.checkList = []
-            }
             if (editedToDo) {//if editing
-                console.log('EDITING')
-                checkListValuesArray = editedToDo.checkList;
                 ToDos.redefineToDo(editedToDo, titleInput.value, descriptionInput.value, dueDateInput.value, prioritySelect.value, checkListValuesArray);
             }
             else {//if filling form for a new to do
-                console.log('checklistvalues')
-                console.log(checkListValuesArray);
                 ToDos.createToDo(titleInput.value, descriptionInput.value, dueDateInput.value, prioritySelect.value, checkListValuesArray);
-                for (let i = 0; i < document.getElementsByTagName('input').length; i++) {//clear the form values
+                for (let i = 0; i < inputContainer.getElementsByTagName('input').length; i++) {//clear the form values
                     inputContainer.getElementsByTagName('input')[i].value = '';
                     prioritySelect.value = 'None';
                 }
                 deadLineInput.checked = false;//uncheck the deadline checkbox
                 checkCheckboxStatus(deadLineInput, addDueDateInputOnPage, () => {
-                    DOMManipulation.removeElements(document.getElementById('form-container').querySelector('input[type="date"]'),
-                        document.getElementById('form-container').querySelector('label[for=Due-date]'));
+                    DOMManipulation.removeElements(inputContainer.querySelector('input[type="date"]'),
+                        inputContainer.querySelector('label[for=Due-date]'));
                 });
 
             }
@@ -415,9 +411,9 @@ const form = (function () {
         statusChecker.addEventListener('click', (e) => {
             form.checkCheckboxStatus(statusChecker,
                 () => {
-                    console.log('!!!'+ JSON.stringify(particularSetOfTodos))
+                    console.log('!!!' + JSON.stringify(particularSetOfTodos))
                     console.log(e.target.id)
-                    console.log('!!!'+ JSON.stringify(particularSetOfTodos[e.target.id[0]]))
+                    console.log('!!!' + JSON.stringify(particularSetOfTodos[e.target.id[0]]))
                     //console.log('!!!'+ particularSetOfTodos[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done)
                     //console.log('!!!'+ particularSetOfTodos[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]])
                     particularSetOfTodos[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done = true;//change this to the ToDoObject or not?
@@ -624,7 +620,7 @@ const ToDos = (function () {
         ToDo.checkList = checkList;
     }
 
-    function getArrayOfTodos(){//use this later
+    function getArrayOfTodos() {//use this later
         return toDoArray
     }
 
