@@ -22,6 +22,8 @@
 //2)checklist elements have numbered ids, but those can repeat so change it
 //status: check if this still applies
 
+//3) when adding checklist elements if you click 'remove', the button to add another element should appear - but does not
+
 //Next steps:
 //0) Replace checkCheckboxStatus with the ternary operator 'element.checked ? ifTrue: ifFalse'
 //1) Add restrictions to form input to ensure aesthetic compatibility
@@ -216,7 +218,7 @@ const form = (function () {
 
                     if (editedToDo && editedToDo.checkList[itemCounter]) {
                         //addCheckListElementCheckBox(DOMelement, ToDoObject, checkListElementOrdinal, particularSetOfTodos)
-                        form.addCheckListElementCheckBox(checklistContainer, editedToDo, itemCounter, ToDos.toDoArray)
+                        form.addCheckListElementCheckBox(checkListElementContainer, editedToDo, itemCounter, ToDos.toDoArray)
                         checkListElement.value = editedToDo.checkList[itemCounter].value;
                         itemCounter++;
                         if (itemCounter < editedToDo.checkList.length) {
@@ -264,9 +266,6 @@ const form = (function () {
         container.appendChild(saveButton);
         saveButton.innerText = 'save'
         saveButton.addEventListener('click', () => {//test this some more
-
-
-
             console.log('!!!savebuttonclicked')
             let checkListValuesArray = [];
             console.log(`!!!  ${inputContainer.getElementsByClassName('checklist-element').length > 0}`)
@@ -275,7 +274,7 @@ const form = (function () {
                 //HOW TO PROCEED:
                 //add checkboxes in the edited todo state as well, so that the data can be fetchedfrom the page entirely
                 //
-
+                console.log('@@@'+JSON.stringify(Array.from(inputContainer.getElementsByClassName('checklist-element'))));
 
 
                 checkListValuesArray = Array.from(inputContainer.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
@@ -308,7 +307,7 @@ const form = (function () {
             dealingWithLocalStorage.updateLocalStorage('toDoArray', ToDos.getArrayOfTodos());
         })
 
-        //finish this now
+
         if (editedToDo) {//if the user is editing todo, display the current values
             console.log(editedToDo)
             console.log(editedToDo.title)
