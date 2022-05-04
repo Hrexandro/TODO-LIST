@@ -44,7 +44,7 @@ document.getElementById('checklocalstorage-button').addEventListener('click', ()
 
 })
 document.getElementById('check todos array-button').addEventListener('click', () => {
-    console.log(JSON.stringify(ToDos.toDoArray))
+    console.log(ToDos.getArrayOfTodos())
 })
 document.getElementById('clear local storage-button').addEventListener('click', () => {
     localStorage.clear()
@@ -286,7 +286,10 @@ const form = (function () {
                 ToDos.redefineToDo(editedToDo, titleInput.value, descriptionInput.value, dueDateInput.value, prioritySelect.value, checkListValuesArray);
             }
             else {//if filling form for a new to do
+                console.log('creating a new todo')
                 ToDos.createToDo(titleInput.value, descriptionInput.value, dueDateInput.value, prioritySelect.value, checkListValuesArray);
+
+                console.log(ToDos.getArrayOfTodos());
                 for (let i = 0; i < inputContainer.getElementsByTagName('input').length; i++) {//clear the form values
                     inputContainer.getElementsByTagName('input')[i].value = '';
                     prioritySelect.value = 'None';
@@ -299,8 +302,8 @@ const form = (function () {
 
             }
             DisplayingToDos.removeAllDisplayedContent();//remove and display again
-            DisplayingToDos.display(ToDos.toDoArray);
             dealingWithLocalStorage.updateLocalStorage('toDoArray', ToDos.getArrayOfTodos());
+            DisplayingToDos.display(ToDos.getArrayOfTodos());
         })
 
 
@@ -409,20 +412,7 @@ const form = (function () {
         }
         DOMManipulation.putElementOnPage(statusChecker, undefined, undefined, undefined, DOMelement);
         statusChecker.addEventListener('click', (e) => {
-            form.checkCheckboxStatus(statusChecker,
-                () => {
-                    console.log('!!!' + JSON.stringify(particularSetOfTodos))
-                    console.log(e.target.id)
-                    console.log('!!!' + JSON.stringify(particularSetOfTodos[e.target.id[0]]))
-                    //console.log('!!!'+ particularSetOfTodos[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done)
-                    //console.log('!!!'+ particularSetOfTodos[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]])
-                    particularSetOfTodos[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done = true;//change this to the ToDoObject or not?
-                    console.log(e.target.id + "checked")
-                },
-                () => {
-                    particularSetOfTodos[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done = false;//change this to the ToDoObject or not?
-                    console.log(e.target.id + "notchecked")
-                })
+            statusChecker.checked ? ToDoObject.checkList[checkListElementOrdinal].done = true : ToDoObject.checkList[checkListElementOrdinal].done = false
             console.log(particularSetOfTodos)
         })
     }
@@ -452,8 +442,6 @@ const DisplayingToDos = (function () {
         console.log('display todo starts');
 
         removeAllDisplayedContent()        //refresh when displaying
-        console.log(JSON.stringify(ToDos.toDoArray))
-
         for (let j = 0; j < arrayOfTodos.length; j++) {
             console.log('the length of array of todos is ' + arrayOfTodos.length)
             let toDoContainer = document.createElement('div');
@@ -588,7 +576,7 @@ const ToDos = (function () {
         toDoArray = JSON.parse(localStorage.getItem('toDoArray'));
         ordinal = toDoArray.length;
     }
-    //ToDos.toDoArray
+
     class toDo {
         constructor(title, description, dueDate, priority, checkList) {
             this.title = title;
@@ -608,8 +596,8 @@ const ToDos = (function () {
 
     function createToDo(title, description, dueDate, priority, checkList) {
         let newToDo = new toDo(title, description, dueDate, priority, checkList);
-        ToDos.toDoArray.push(newToDo);
-        dealingWithLocalStorage.updateLocalStorage('toDoArray', ToDos.toDoArray);
+        toDoArray.push(newToDo);
+        dealingWithLocalStorage.updateLocalStorage('toDoArray', toDoArray);
     }
 
     function redefineToDo(ToDo, title, description, dueDate, priority, checkList) {
@@ -621,13 +609,18 @@ const ToDos = (function () {
     }
 
     function getArrayOfTodos() {//use this later
-        return toDoArray
+        return toDoArray;
+    }
+
+    function replaceArrayOfTodos(arr){
+        toDoArray = arr
     }
 
     return {
         createToDo,
         redefineToDo,
         getArrayOfTodos,
+        replaceArrayOfTodos,
         toDoArray,//restrict it later, to expose only a get of the arrat or perhaps particular properties to be changed, e.g. checklist status or priority
     }
 })();
@@ -645,6 +638,6 @@ const dealingWithLocalStorage = (function () {
     }
 })();
 if (localStorage.getItem('toDoArray')) {//if something has been set in the local storage, then retrieve on startup
-    ToDos.toDoArray = JSON.parse(localStorage.getItem('toDoArray'))
-    DisplayingToDos.display(JSON.parse(localStorage.getItem('toDoArray')))
+    ToDos.replaceArrayOfTodos(JSON.parse(localStorage.getItem('toDoArray')));
+    DisplayingToDos.display(JSON.parse(localStorage.getItem('toDoArray')));
 }
