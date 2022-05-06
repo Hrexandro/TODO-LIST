@@ -25,6 +25,7 @@
 //3) when adding checklist elements if you click 'remove', the button to add another element should appear - but does not
 
 //Next steps:
+//-1)add a function checking if ToDo ordinal is already used, if it is, skip to next
 //0) Replace checkCheckboxStatus with the ternary operator 'element.checked ? ifTrue: ifFalse'
 //1) Add restrictions to form input to ensure aesthetic compatibility
 //2) Style everything to look nice and neat and clean and super cool
@@ -49,7 +50,6 @@ document.getElementById('check todos array-button').addEventListener('click', ()
 document.getElementById('clear local storage-button').addEventListener('click', () => {
     localStorage.clear()
 })
-
 
 ////////////////
 
@@ -125,7 +125,8 @@ const form = (function () {
         }
     }
     function createFormToDefineToDo(container, editedToDo) {//the second argument is only used when the form is created to edit an existing todo
-
+        console.log('edited to do is')
+        console.log(editedToDo)
         let titleInput = document.createElement('input');
         let descriptionInput = document.createElement('input');
         let deadLineInput = document.createElement('input');
@@ -283,7 +284,14 @@ const form = (function () {
                 checkListValuesArray = Array.from(inputContainer.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
             }
             if (editedToDo) {//if editing
-                ToDos.redefineToDo(editedToDo, titleInput.value, descriptionInput.value, dueDateInput.value, prioritySelect.value, checkListValuesArray);
+                console.log('editing!')
+                console.log(checkListValuesArray)
+                //ToDos.redefineToDo(editedToDo, titleInput.value, descriptionInput.value, dueDateInput.value, prioritySelect.value, checkListValuesArray);
+                //checking if editedToDo refers to the wrong thing
+                ToDos.redefineToDo(editedToDo.ordinal, titleInput.value, descriptionInput.value, dueDateInput.value, prioritySelect.value, checkListValuesArray);
+
+                console.log(editedToDo)
+                console.log(ToDos.getArrayOfTodos())
             }
             else {//if filling form for a new to do
                 console.log('creating a new todo')
@@ -302,8 +310,11 @@ const form = (function () {
 
             }
             DisplayingToDos.removeAllDisplayedContent();//remove and display again
-            dealingWithLocalStorage.updateLocalStorage('toDoArray', ToDos.getArrayOfTodos());
             DisplayingToDos.display(ToDos.getArrayOfTodos());
+            dealingWithLocalStorage.updateLocalStorage('toDoArray', ToDos.getArrayOfTodos());
+            console.log('checking!')
+            console.log(ToDos.getArrayOfTodos())
+            console.log(JSON.stringify(localStorage.getItem('toDoArray')))
         })
 
 
@@ -532,7 +543,8 @@ const DisplayingToDos = (function () {
             editToDoButton.addEventListener('click', () => {
                 console.log('edit todo button clicked');
                 DOMManipulation.removeAllChildren(toDoContainer);
-                form.createFormToDefineToDo(toDoContainer, arrayOfTodos[j]);
+                console.log(ToDos.toDoArray[j])
+                form.createFormToDefineToDo(toDoContainer, ToDos.toDoArray[j]);
 
 
             })
@@ -582,7 +594,7 @@ const ToDos = (function () {
             this.title = title;
             this.description = description;
             this.priority = priority;
-            this.ordinal = ordinal;
+            this.ordinal = ordinal;//add a function checking if ToDo ordinal is already used, if it is, skip to next
             this.toDoStatus = "open"
             ordinal++;
             if (dueDate) {
@@ -600,19 +612,20 @@ const ToDos = (function () {
         dealingWithLocalStorage.updateLocalStorage('toDoArray', toDoArray);
     }
 
-    function redefineToDo(ToDo, title, description, dueDate, priority, checkList) {
-        ToDo.title = title;
-        ToDo.description = description;
-        ToDo.dueDate = dueDate;
-        ToDo.priority = priority;
-        ToDo.checkList = checkList;
+    function redefineToDo(ordinal, title, description, dueDate, priority, checkList) {
+        let RedefinedToDo = toDoArray.find(item => item.ordinal === ordinal);
+        RedefinedToDo.title = title;
+        RedefinedToDo.description = description;
+        RedefinedToDo.dueDate = dueDate;
+        RedefinedToDo.priority = priority;
+        RedefinedToDo.checkList = checkList;
     }
 
     function getArrayOfTodos() {//use this later
         return toDoArray;
     }
 
-    function replaceArrayOfTodos(arr){
+    function replaceArrayOfTodos(arr) {
         toDoArray = arr
     }
 
