@@ -594,7 +594,16 @@ const ToDos = (function () {
             this.title = title;
             this.description = description;
             this.priority = priority;
-            this.ordinal = ordinal;//add a function checking if ToDo ordinal is already used, if it is, skip to next
+            while (toDoArray.some((item) => { return item.ordinal === ordinal })) {//ensure ordinals do not duplicate
+                ordinal++
+                if (ordinal > 9999) {
+                    console.log('Infinite loop error')
+                    alert('Infinite loop error');
+
+                    break;
+                }
+            }
+            this.ordinal = ordinal;
             this.toDoStatus = "open"
             ordinal++;
             if (dueDate) {
