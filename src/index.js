@@ -4,14 +4,13 @@
 //Issues:
 //1) When checklist elements are edited, the changes are not saved
 
-//Reason: the code used when saving the ToDo currently fetches info from the saved array
-//this was mistakenly done to preserve their done/not done status
-
-//Solution: add checkboxes to the edited checklist elements as well, so they can be edited and the correct status fetched from the page
-
-//Status: checkboxes appear, localstorage is not updated when saving the edited changes
-//HOWEVER if localstorage is updated though clicking anywhere in the updated todo - it works
-//Next step: make sure the saving of the edited todo is coded correctly
+//Check all kinds of changes:
+//checklist checking and unchecking: works
+//adding priority: does not stay, UNLESS you additionally click somewhere to update the local storage
+//description and title: ??
+//deadline: ??
+//status:??
+//editing the text and adding new checklist items: ??
 
 
 
@@ -25,7 +24,6 @@
 //3) when adding checklist elements if you click 'remove', the button to add another element should appear - but does not
 
 //Next steps:
-//-1)add a function checking if ToDo ordinal is already used, if it is, skip to next
 //0) Replace checkCheckboxStatus with the ternary operator 'element.checked ? ifTrue: ifFalse'
 //1) Add restrictions to form input to ensure aesthetic compatibility
 //2) Style everything to look nice and neat and clean and super cool
@@ -285,11 +283,12 @@ const form = (function () {
             }
             if (editedToDo) {//if editing
                 console.log('editing!')
+                console.log(prioritySelect.value)
                 console.log(checkListValuesArray)
                 //ToDos.redefineToDo(editedToDo, titleInput.value, descriptionInput.value, dueDateInput.value, prioritySelect.value, checkListValuesArray);
                 //checking if editedToDo refers to the wrong thing
                 ToDos.redefineToDo(editedToDo.ordinal, titleInput.value, descriptionInput.value, dueDateInput.value, prioritySelect.value, checkListValuesArray);
-
+                console.log('to do after saving')
                 console.log(editedToDo)
                 console.log(ToDos.getArrayOfTodos())
             }
@@ -555,8 +554,16 @@ const DisplayingToDos = (function () {
                 console.log('delete todo clicked')
                 arrayOfTodos.splice(j, 1);
                 toDoContainer.remove();
-                console.log('to do array after deleting element' + JSON.stringify(arrayOfTodos));
-                console.log('attention, this is local storage' + localStorage.getItem('toDoArray'));
+                dealingWithLocalStorage.updateLocalStorage('toDoArray', arrayOfTodos);
+                console.log('arrayOfTodos')
+                console.log(arrayOfTodos)
+                console.log('get to do array')
+                console.log(ToDos.getArrayOfTodos())
+                console.log('localstorage')
+                console.log(JSON.stringify(localStorage.getItem('toDoArray')))
+
+                // console.log('to do array after deleting element' + JSON.stringify(arrayOfTodos));
+                // console.log('attention, this is local storage' + localStorage.getItem('toDoArray'));
             })
             console.log(arrayOfTodos[j])
             console.log(arrayOfTodos[j].checkList)
@@ -661,5 +668,5 @@ const dealingWithLocalStorage = (function () {
 })();
 if (localStorage.getItem('toDoArray')) {//if something has been set in the local storage, then retrieve on startup
     ToDos.replaceArrayOfTodos(JSON.parse(localStorage.getItem('toDoArray')));
-    DisplayingToDos.display(JSON.parse(localStorage.getItem('toDoArray')));
+    DisplayingToDos.display(ToDos.getArrayOfTodos());
 }
