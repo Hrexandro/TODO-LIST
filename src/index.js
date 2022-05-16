@@ -92,10 +92,6 @@ const DOMManipulation = (function () {
     function removeAllChildren(element) {
         let counter = element.children.length;
         for (let m = 0; m <= counter; m++) {
-            console.log('iteration' + m);
-            console.log('m is ' + m)
-            console.log(element.children);
-            console.log(element.children[0]);
             if (element.children[0]) {
                 element.children[0].remove();
             }
@@ -316,8 +312,10 @@ const form = (function () {
             console.log(JSON.stringify(localStorage.getItem('toDoArray')))
         })
 
-
+        console.log('should display default values')
+        console.log(editedToDo)
         if (editedToDo) {//if the user is editing todo, display the current values
+            console.log('displaying default values')
             console.log(editedToDo)
             console.log(editedToDo.title)
             titleInput.value = editedToDo.title;
@@ -479,57 +477,7 @@ const DisplayingToDos = (function () {
                     displayedCheckListElementContainer.setAttribute('class', 'checklist-element-container')//this is new
 
                     DOMManipulation.putElementOnPage('p', undefined, undefined, arrayOfTodos[j].checkList[l].value, displayedCheckListElementContainer);//label
-                    ////////////////////////////////moving this to the functionVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-                    // let statusChecker = document.createElement('input')
-                    // statusChecker.setAttribute('type', 'checkbox')
-                    // statusChecker.setAttribute('id', `${arrayOfTodos[j].ordinal}-${l}`)//id is the ToDoOrdinal-checklist element number, e.g. 0-0, 0-1, 1-0 etc.
-                    // console.log('!CHECK!' + arrayOfTodos[j].checkList[l].done)
-                    // if (arrayOfTodos[j].checkList[l].done) {
-                    //     console.log('!CHECK! runs')
-                    //     statusChecker.checked = true;
-                    // }
-                    // DOMManipulation.putElementOnPage(statusChecker, undefined, undefined, undefined, displayedCheckListElementContainer);
-                    // statusChecker.addEventListener('click', (e) => {
-                    //     form.checkCheckboxStatus(statusChecker,
-                    //         () => {
-                    //             arrayOfTodos[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done = true;
-                    //             console.log(e.target.id + "checked")
-                    //         },
-                    //         () => {
-                    //             arrayOfTodos[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done = false;
-                    //             console.log(e.target.id + "notchecked")
-                    //         })
-                    //     console.log(arrayOfTodos)
-                    // })
-                    ////////////////////////////////moving this to the function^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                     form.addCheckListElementCheckBox(displayedCheckListElementContainer, arrayOfTodos[j], l, arrayOfTodos)//fun function instead of all the code freely
-
-                    //finish this function so that it can apply also to the edited todo's checklist
-                    //then move it (to Form? and use it in both places)
-                    // function addCheckListElementCheckBox(DOMelement, ToDoObject, checkListElementOrdinal, particularSetOfTodos) {//later put outside and use it also for the edited todo
-                    //     let statusChecker = document.createElement('input')
-                    //     statusChecker.setAttribute('type', 'checkbox')
-                    //     statusChecker.setAttribute('id', `${ToDoObject.ordinal}-${checkListElementOrdinal}`)//id is the ToDoOrdinal-checklist element number, e.g. 0-0, 0-1, 1-0 etc.
-                    //     console.log('!CHECK!' + ToDoObject.checkList[checkListElementOrdinal].done)// the [l]!!!!!!
-                    //     if (ToDoObject.checkList[checkListElementOrdinal].done) {
-                    //         console.log('!CHECK! runs')
-                    //         statusChecker.checked = true;
-                    //     }
-                    //     DOMManipulation.putElementOnPage(statusChecker, undefined, undefined, undefined, DOMelement);
-                    //     statusChecker.addEventListener('click', (e) => {
-                    //         form.checkCheckboxStatus(statusChecker,
-                    //             () => {
-                    //                 particularSetOfTodos[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done = true;//change this to the ToDoObject or not?
-                    //                 console.log(e.target.id + "checked")
-                    //             },
-                    //             () => {
-                    //                 particularSetOfTodos[e.target.id[0]].checkList[e.target.id[e.target.id.length - 1]].done = false;//change this to the ToDoObject or not?
-                    //                 console.log(e.target.id + "notchecked")
-                    //             })
-                    //         console.log(arrayOfTodos)
-                    //     })
-                    // }
-
                 }
 
             }
@@ -541,9 +489,12 @@ const DisplayingToDos = (function () {
             DOMManipulation.putElementOnPage(editToDoButton, undefined, undefined, 'edit', toDoContainer);
             editToDoButton.addEventListener('click', () => {
                 console.log('edit todo button clicked');
+                console.log(j)
+                console.log(ToDos.toDoArray)
+                console.log(ToDos.getArrayOfTodos())
                 DOMManipulation.removeAllChildren(toDoContainer);
                 console.log(ToDos.toDoArray[j])
-                form.createFormToDefineToDo(toDoContainer, ToDos.toDoArray[j]);
+                form.createFormToDefineToDo(toDoContainer, ToDos.getArrayOfTodos()[j]);
 
 
             })
