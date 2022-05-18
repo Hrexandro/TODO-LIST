@@ -4,11 +4,12 @@
 //Issues:
 //1) When checklist elements are edited, the changes are not saved
 
+
 //Check all kinds of changes:
 //checklist checking and unchecking: works
 //adding priority: does not stay, UNLESS you additionally click somewhere to update the local storage
-//description and title: ??
-//deadline: ??
+//description and title: ok
+//deadline: ok
 //status:??
 //editing the text and adding new checklist items: ??
 
@@ -167,8 +168,6 @@ const form = (function () {
             checkDeadline();
         });
 
-
-
         let checkListInput = document.createElement('input');
         checkListInput.type = 'checkbox';
         DOMManipulation.putElementOnPage(checkListInput, 'Checklist', undefined, undefined, inputContainer);
@@ -204,7 +203,6 @@ const form = (function () {
                     let addNextElementButton = document.createElement('button');
                     DOMManipulation.putElementOnPage(addNextElementButton, undefined, undefined, "+", checkListElementContainer);
                     addNextElementButton.setAttribute('class', 'add-next-element-button')
-
                     addNextElementButton.addEventListener('click', () => {
                         DOMManipulation.removeElements(document.getElementsByClassName('add-next-element-button')[0])
 
@@ -212,7 +210,6 @@ const form = (function () {
                     })
 
                     if (editedToDo && editedToDo.checkList[itemCounter]) {
-                        //addCheckListElementCheckBox(DOMelement, ToDoObject, checkListElementOrdinal, particularSetOfTodos)
                         form.addCheckListElementCheckBox(checkListElementContainer, editedToDo, itemCounter, ToDos.toDoArray)
                         checkListElement.value = editedToDo.checkList[itemCounter].value;
                         itemCounter++;
@@ -220,24 +217,18 @@ const form = (function () {
                             createNextItem();
                         }
                     }
-
                     let removeSpecificElementButton = document.createElement('button');
                     DOMManipulation.putElementOnPage(removeSpecificElementButton, undefined, undefined, "remove", checkListElementContainer);
                     removeSpecificElementButton.setAttribute('class', 'remove-specific-element-button')
-
                     removeSpecificElementButton.addEventListener('click', () => {
                         DOMManipulation.removeElements(removeSpecificElementButton.parentElement)
                     })
                 }
                 createNextItem();
-
-
-
             },
                 () => {
                     document.getElementById('checklist-container').remove();
                 }
-
             );
         }
 
@@ -264,8 +255,7 @@ const form = (function () {
 
             let checkListValuesArray = [];
 
-            if (editedToDo && inputContainer.getElementsByClassName('checklist-element').length > 0) {//if there are displayed checklist points, use them
-
+            if (editedToDo && inputContainer.getElementsByClassName('checklist-element-checkbox').length) {//if there are displayed checklist points, use them
                 for (let m = 0; m < inputContainer.getElementsByClassName('checklist-element').length; m++) {
                     let currentContainer = inputContainer.getElementsByClassName('checklist-element-container')[m];
                     let elementValue = currentContainer.getElementsByClassName('checklist-element')[0].value;
@@ -278,15 +268,7 @@ const form = (function () {
                 checkListValuesArray = Array.from(inputContainer.getElementsByClassName('checklist-element')).map((el) => { return { value: el.value, done: false } })
             }
             if (editedToDo) {//if editing
-                console.log('editing!')
-                console.log(prioritySelect.value)
-                console.log(checkListValuesArray)
-                //ToDos.redefineToDo(editedToDo, titleInput.value, descriptionInput.value, dueDateInput.value, prioritySelect.value, checkListValuesArray);
-                //checking if editedToDo refers to the wrong thing
                 ToDos.redefineToDo(editedToDo.ordinal, titleInput.value, descriptionInput.value, dueDateInput.value, prioritySelect.value, checkListValuesArray);
-                console.log('to do after saving')
-                console.log(editedToDo)
-                console.log(ToDos.getArrayOfTodos())
             }
             else {//if filling form for a new to do
                 console.log('creating a new todo')
@@ -412,6 +394,7 @@ const form = (function () {
     function addCheckListElementCheckBox(DOMelement, ToDoObject, checkListElementOrdinal, particularSetOfTodos) {//later put outside and use it also for the edited todo
         let statusChecker = document.createElement('input')
         statusChecker.setAttribute('type', 'checkbox')
+        statusChecker.setAttribute('class', 'checklist-element-checkbox')
         statusChecker.setAttribute('id', `${ToDoObject.ordinal}-${checkListElementOrdinal}`)//id is the ToDoOrdinal-checklist element number, e.g. 0-0, 0-1, 1-0 etc.
         console.log('!CHECK!' + ToDoObject.checkList[checkListElementOrdinal].done)// the [l]!!!!!!
         if (ToDoObject.checkList[checkListElementOrdinal].done) {
