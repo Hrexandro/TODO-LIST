@@ -1,28 +1,8 @@
 //Current status:
 
-//Checkboxes - ensure proper behaviour when editing a ToDo
-//Issues:
-//1) When checklist elements are edited, the changes are not saved
-
-
-//Check all kinds of changes:
-//checklist checking and unchecking: works
-//adding priority: does not stay, UNLESS you additionally click somewhere to update the local storage
-//description and title: ok
-//deadline: ok
-//status:??
-//editing the text and adding new checklist items: ??
-
-
 
 //BUGS:
-//1) If one Todos in an edited state and others get deleted and then  you save the changes, the deleted todos reappear
-//status: check if this still applies
 
-//2)checklist elements have numbered ids, but those can repeat so change it
-//status: check if this still applies
-
-//3) when adding checklist elements if you click 'remove', the button to add another element should appear - but does not
 
 //Next steps:
 //0) Replace checkCheckboxStatus with the ternary operator 'element.checked ? ifTrue: ifFalse'
@@ -161,7 +141,6 @@ const form = (function () {
                     DOMManipulation.removeElements(inputContainer.querySelector('input[type="date"]'), inputContainer.querySelector('label[for=Due-date]'))
                 }
             );
-
         }
 
         deadLineInput.addEventListener('click', () => {
@@ -204,7 +183,7 @@ const form = (function () {
                     DOMManipulation.putElementOnPage(addNextElementButton, undefined, undefined, "+", checkListElementContainer);
                     addNextElementButton.setAttribute('class', 'add-next-element-button')
                     addNextElementButton.addEventListener('click', () => {
-                        DOMManipulation.removeElements(document.getElementsByClassName('add-next-element-button')[0])
+                        //DOMManipulation.removeElements(document.getElementsByClassName('add-next-element-button')[0])
 
                         createNextItem();
                     })
@@ -218,9 +197,11 @@ const form = (function () {
                         }
                     }
                     let removeSpecificElementButton = document.createElement('button');
-                    DOMManipulation.putElementOnPage(removeSpecificElementButton, undefined, undefined, "remove", checkListElementContainer);
+                    DOMManipulation.putElementOnPage(removeSpecificElementButton, undefined, undefined, 'remove', checkListElementContainer);
                     removeSpecificElementButton.setAttribute('class', 'remove-specific-element-button')
                     removeSpecificElementButton.addEventListener('click', () => {
+                        console.log('checking this')
+                        console.log(removeSpecificElementButton.parentElement)
                         DOMManipulation.removeElements(removeSpecificElementButton.parentElement)
                     })
                 }
@@ -259,7 +240,10 @@ const form = (function () {
                 for (let m = 0; m < inputContainer.getElementsByClassName('checklist-element').length; m++) {
                     let currentContainer = inputContainer.getElementsByClassName('checklist-element-container')[m];
                     let elementValue = currentContainer.getElementsByClassName('checklist-element')[0].value;
-                    let elementDone = currentContainer.querySelector('input[type="checkbox"]').checked
+                    let elementDone = false;//false by default
+                    if (currentContainer.querySelector('input[type="checkbox"]')){//if there is a checked checkbox, change it
+                        elementDone = currentContainer.querySelector('input[type="checkbox"]').checked
+                    }
                     checkListValuesArray.push({ value: elementValue, done: elementDone })
 
                 }
@@ -396,9 +380,7 @@ const form = (function () {
         statusChecker.setAttribute('type', 'checkbox')
         statusChecker.setAttribute('class', 'checklist-element-checkbox')
         statusChecker.setAttribute('id', `${ToDoObject.ordinal}-${checkListElementOrdinal}`)//id is the ToDoOrdinal-checklist element number, e.g. 0-0, 0-1, 1-0 etc.
-        console.log('!CHECK!' + ToDoObject.checkList[checkListElementOrdinal].done)// the [l]!!!!!!
         if (ToDoObject.checkList[checkListElementOrdinal].done) {
-            console.log('!CHECK! runs')
             statusChecker.checked = true;
         }
         DOMManipulation.putElementOnPage(statusChecker, undefined, undefined, undefined, DOMelement);
@@ -545,7 +527,7 @@ const ToDos = (function () {
                 }
             }
             this.ordinal = ordinal;
-            this.toDoStatus = "open"
+            this.toDoStatus = 'open'
             ordinal++;
             if (dueDate) {
                 this.dueDate = dueDate;
