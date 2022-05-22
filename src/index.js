@@ -4,7 +4,7 @@
 //edited todo after unchecking deadline the deadline does not disappear
 
 //Next steps:
-//0) Replace checkCheckboxStatus with the ternary operator 'element.checked ? ifTrue: ifFalse'
+//0.5) the plus in addiong checklist elements should add one after this, not at the very end
 //1) Add restrictions to form input to ensure aesthetic compatibility
 //2) Style everything to look nice and neat and clean and super cool
 //3) make them draggable to switch places
@@ -90,14 +90,6 @@ const form = (function () {
     const addButton = document.getElementById('add-button');
     const formContainer = document.getElementById('form-container')
 
-    function checkCheckboxStatus(checkBoxElement, ifChecked, ifUnchecked) {//make sure the parameters are functions;; get rid of this, replace with ternary operator
-        if (checkBoxElement.checked) {
-            return ifChecked();
-        }
-        else {
-            return ifUnchecked();
-        }
-    }
     function createFormToDefineToDo(container, editedToDo) {//the second argument is only used when the form is created to edit an existing todo
         console.log('edited to do is')
         console.log(editedToDo)
@@ -130,17 +122,9 @@ const form = (function () {
 
         function checkDeadline() {//for the sake of reusability in the form and when editing
 
-            deadLineInput.checked ? 
-            addDueDateInputOnPage(inputContainer, inputContainer.querySelector('label[for=Checklist]')) :
-            DOMManipulation.removeElements(inputContainer.querySelector('input[type="date"]'), inputContainer.querySelector('label[for=Due-date]'))
-
-            // checkCheckboxStatus(deadLineInput, () => {
-            //     addDueDateInputOnPage(inputContainer, inputContainer.querySelector('label[for=Checklist]'))
-            // },
-            //     () => {
-            //         DOMManipulation.removeElements(inputContainer.querySelector('input[type="date"]'), inputContainer.querySelector('label[for=Due-date]'))
-            //     }
-            // );
+            deadLineInput.checked ?
+                addDueDateInputOnPage(inputContainer, inputContainer.querySelector('label[for=Checklist]')) :
+                DOMManipulation.removeElements(inputContainer.querySelector('input[type="date"]'), inputContainer.querySelector('label[for=Due-date]'))
         }
 
         deadLineInput.addEventListener('click', () => {
@@ -152,7 +136,7 @@ const form = (function () {
         DOMManipulation.putElementOnPage(checkListInput, 'Checklist', undefined, undefined, inputContainer);
 
         function controlCheckList(checkListCheckBox) {
-            checkCheckboxStatus(checkListCheckBox, () => {//the longest one to change to ternary operator
+            if (checkListCheckBox.checked) {
                 let checklistContainer = document.createElement('div');
                 DOMManipulation.putElementOnPage(checklistContainer, undefined, inputContainer.querySelector('label[for=Priority]'), undefined, inputContainer);
                 checklistContainer.setAttribute('id', 'checklist-container');
@@ -205,12 +189,15 @@ const form = (function () {
                         DOMManipulation.removeElements(removeSpecificElementButton.parentElement)
                     })
                 }
-                createNextItem();
-            },
-                () => {
-                    document.getElementById('checklist-container').remove();
-                }
-            );
+                createNextItem()
+            } else {
+                document.getElementById('checklist-container').remove();
+            }
+
+
+
+
+
         }
 
         checkListInput.addEventListener('click', () => {
@@ -241,7 +228,7 @@ const form = (function () {
                     let currentContainer = inputContainer.getElementsByClassName('checklist-element-container')[m];
                     let elementValue = currentContainer.getElementsByClassName('checklist-element')[0].value;
                     let elementDone = false;//false by default
-                    if (currentContainer.querySelector('input[type="checkbox"]')){//if there is a checked checkbox, change it
+                    if (currentContainer.querySelector('input[type="checkbox"]')) {//if there is a checked checkbox, change it
                         elementDone = currentContainer.querySelector('input[type="checkbox"]').checked
                     }
                     checkListValuesArray.push({ value: elementValue, done: elementDone })
@@ -269,13 +256,7 @@ const form = (function () {
                 }
                 deadLineInput.checked = false;//uncheck the deadline checkbox
                 DOMManipulation.removeElements(inputContainer.querySelector('input[type="date"]'),
-                inputContainer.querySelector('label[for=Due-date]'));
-
-                // checkCheckboxStatus(deadLineInput, addDueDateInputOnPage, () => {
-                //     DOMManipulation.removeElements(inputContainer.querySelector('input[type="date"]'),
-                //         inputContainer.querySelector('label[for=Due-date]'));
-                // });
-
+                    inputContainer.querySelector('label[for=Due-date]'));
             }
             DisplayingToDos.removeAllDisplayedContent();//remove and display again
             DisplayingToDos.display(ToDos.getArrayOfTodos());
@@ -398,7 +379,6 @@ const form = (function () {
     }
 
     return {
-        checkCheckboxStatus,
         createFormToDefineToDo,
         determineNoteState,
         addCheckListElementCheckBox,
