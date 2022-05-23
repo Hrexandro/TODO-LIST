@@ -5,6 +5,9 @@
 
 //Next steps:
 //0.5) the plus in addiong checklist elements should add one after this, not at the very end
+//createNextItem should be edited for that 
+
+
 //1) Add restrictions to form input to ensure aesthetic compatibility
 //2) Style everything to look nice and neat and clean and super cool
 //3) make them draggable to switch places
@@ -144,8 +147,8 @@ const form = (function () {
                 let itemCounter = 0;
                 function createNextItem() {
                     let checkListElementContainer = document.createElement('div');
-                    let elementNumber = checkListElementCounter;
-                    checkListElementContainer.setAttribute('id', elementNumber);
+                    //let elementNumber = checkListElementCounter; if the line below is not used, this one isn't either
+                    //checkListElementContainer.setAttribute('id', elementNumber); the numbers would duplicate, should not be used in any case
                     checkListElementContainer.setAttribute('class', 'checklist-element-container');
                     checkListElementCounter++;
 
